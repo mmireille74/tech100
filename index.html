@@ -50,6 +50,9 @@ input:focus{outline:none;border-color:var(--acc)}
 .rec .be{display:block;margin-top:6px;font-size:11px;color:var(--up)}
 .rec .ent{display:block;margin-top:6px}
 .rec .ent button{border:1px solid var(--up);background:#12351f;color:var(--up);border-radius:4px;padding:5px 10px;font:inherit;font-size:11px;cursor:pointer}
+.prev{font-size:11px;line-height:1.8}
+.prev .pl{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #161e2a;padding:3px 0}
+.prev .pl.hi{color:var(--warn)}
 .ladder{margin-top:9px;border-top:1px solid var(--line);padding-top:6px}
 .lr{display:grid;grid-template-columns:44px 1fr 70px;gap:6px;font-size:11px;padding:3px 4px;border-radius:3px;color:var(--dim)}
 .lr.now{background:#1b2331;color:var(--txt);font-weight:bold}
@@ -75,7 +78,7 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 <body>
 <div class="wrap">
 <div class="hd">
-  <div class="hd-l"><b>TECH100</b> <span class="tag">v18</span> <span id="badge" class="pill">NEARMAT</span></div>
+  <div class="hd-l"><b>TECH100</b> <span class="tag">v19</span> <span id="badge" class="pill">NEARMAT</span></div>
   <div class="hd-r"><span id="clk">--:--:--</span> <span id="mkt" class="pill">—</span></div>
 </div>
 
@@ -114,6 +117,11 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 </div>
 
 <div class="card">
+  <div class="ct">Previzualizare la prețul curent</div>
+  <div id="prev" class="prev"><div class="dim">Introdu un preț.</div></div>
+</div>
+
+<div class="card">
   <div class="ct">Recomandare</div>
   <div id="zone" class="zone">—</div>
   <div id="rec" class="rec"></div>
@@ -144,7 +152,7 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 
 <script>
 const $=id=>document.getElementById(id);
-const K='t100v18', EXP=20*60*1000, GAPMS=3*60*1000, GAPENT=40;
+const K='t100v19', EXP=20*60*1000, GAPMS=3*60*1000, GAPENT=40;
 let S={armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null,entered:0};
 const nf=v=>v==null?'—':Number(v).toLocaleString('ro-RO',{minimumFractionDigits:2,maximumFractionDigits:2});
 const num=id=>parseFloat($(id).value)||0;
@@ -183,6 +191,14 @@ function calc(d,e){const cap=num('cap'),rk=num('risk'),pv=num('pv')||1,atr=num('
  const sp=Math.max(60,atr*(con?0.55:0.35)),rr=con?3:2;const ru=cap*rk/100;
  const l=lf>0?lf:Math.max(0.1,Math.floor((ru/(sp*pv))*(con?0.5:1)*100)/100);
  return{sp,stop:d==='short'?e+sp:e-sp,tp:d==='short'?e-sp*rr:e+sp*rr,lot:l,rr,con,ru,risk:l*sp*pv,maxStop:ru/(l*pv)};}
+function paintPrev(){
+ const p=S.last;
+ if(!p){$('prev').innerHTML='<div class="dim">Introdu un preț.</div>';return;}
+ const rows=['short','long'].map(d=>{const c=calc(d,p),over=c.risk>c.ru;
+  return '<div class="pl'+(over?' hi':'')+'"><span style="color:'+(d==='short'?'#ef4444':'#22c55e')+'">'+d.toUpperCase()+'</span>'+
+  '<span>SL '+nf(c.stop)+' · TP '+nf(c.tp)+' · <b>'+nf(c.risk)+' $</b> ('+nf(c.risk/num('cap')*100)+'%)</span></div>';}).join('');
+ $('prev').innerHTML=rows+'<div class="dim" style="margin-top:4px;font-size:10px">calculat la '+nf(p)+' · lot '+(num('lot')>0?num('lot').toFixed(2):'auto')+'</div>';
+}
 function paint(d,e,c,jmp){
  const over=c.risk>c.ru;
  $('rec').className='rec';
@@ -201,10 +217,10 @@ function fire(d,b){
  const lbl=(d==='short'?'SHORT':'LONG')+' la '+b.k+' @ '+nf(e)+' · SL '+nf(c.stop)+' · TP '+nf(c.tp);
  alarm(lbl);st(lbl,'fire');paint(d,e,c,jmp);
  S.jrn.unshift({t:new Date().toLocaleTimeString('ro-RO'),d,k:b.k,e,tp:c.tp,s:c.stop,l:c.lot.toFixed(2),res:null});drawJrn();save();}
-function reCalc(){if(!S.cur)return;const c=calc(S.cur.d,S.cur.e);paint(S.cur.d,S.cur.e,c,false);}
+function reCalc(){paintPrev();if(S.cur)paint(S.cur.d,S.cur.e,calc(S.cur.d,S.cur.e),false);}
 function onPrice(p,src){if(!p||!isFinite(p))return;const now=Date.now();
  if(S.lastT&&now-S.lastT>GAPMS&&!S.demo)S.last=null;
- const prev=S.last;S.last=p;S.lastT=now;$('bigPx').textContent=nf(p);
+ const prev=S.last;S.last=p;S.lastT=now;$('bigPx').textContent=nf(p);paintPrev();
  const rg=reg(p);$('zone').innerHTML='Regim: <b style="color:'+(rg==='short'?'#ef4444':rg==='long'?'#22c55e':'#76849a')+'">'+rg.toUpperCase()+'</b>'+(src==='demo'?' [demo]':'');
  if(!S.armed){$('armLine').className='nst no';$('armLine').textContent='Preț preluat, benzile nu sunt armate.';draw(p);return;}
  if(prev!=null)for(const b of S.bands){if(prev>b.v&&p<=b.v){S.hit[b.k]='d';fire('short',b);}else if(prev<b.v&&p>=b.v){S.hit[b.k]='u';fire('long',b);}}
@@ -231,7 +247,7 @@ $('pxBtn').onclick=subPx;$('px').addEventListener('keydown',e=>{if(e.key==='Ente
 $('armBtn').onclick=arm;
 $('testSig').onclick=()=>{unlock();alarm('TEST alarmă.',30);st('test','fire');};
 $('demo').onclick=demo;
-$('reset').onclick=()=>{S.armed=0;S.last=null;S.lastT=0;S.hit={};S.bands=[];S.cur=null;$('rec').innerHTML='';
+$('reset').onclick=()=>{S.armed=0;S.last=null;S.lastT=0;S.hit={};S.bands=[];S.cur=null;$('rec').innerHTML='';$('prev').innerHTML='<div class="dim">Introdu un preț.</div>';
  $('armBtn').className='b arm';$('armBtn').textContent='ARMEAZĂ BENZILE';$('armLine').className='nst';$('armLine').textContent='Benzile nu sunt armate.';
  $('badge').className='pill';$('badge').textContent='NEARMAT';st('reset');draw();};
 $('clearJ').onclick=()=>{S.jrn=[];S.strikes=0;drawJrn();save();};
