@@ -82,7 +82,7 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 <body>
 <div class="wrap">
 <div class="hd">
-  <div class="hd-l"><b>TECH100</b> <span class="tag">v13</span> <span id="badge" class="pill">NEARMAT</span></div>
+  <div class="hd-l"><b>TECH100</b> <span class="tag">v14</span> <span id="badge" class="pill">NEARMAT</span></div>
   <div class="hd-r"><span id="clk">--:--:--</span> <span id="mkt" class="pill">—</span></div>
 </div>
 
@@ -177,13 +177,20 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 
 <script>
 const $=id=>document.getElementById(id);
-const K='t100v13', EXP=20*60*1000, GAPMS=3*60*1000, GAPENT=40, FEED='https://query1.finance.yahoo.com/v8/finance/chart/NQ%3DF?interval=5m&range=1d';
-let S={mode:'auto',basis:null,fut:null,armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null,entered:0};
+const K='t100v14', EXP=20*60*1000, GAPMS=3*60*1000, GAPENT=40;
+const TGT='https://query1.finance.yahoo.com/v8/finance/chart/NQ%3DF?interval=5m&range=1d';
+const SRC=[
+ u=>u,
+ u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
+ u=>'https://corsproxy.io/?'+encodeURIComponent(u),
+ u=>'https://r.jina.ai/'+u
+];
+let S={mode:'auto',basis:null,fut:null,armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null,entered:0,si:0};
 const nf=v=>v==null?'—':Number(v).toLocaleString('ro-RO',{minimumFractionDigits:2,maximumFractionDigits:2});
 const num=id=>parseFloat($(id).value)||0;
 const mmss=ms=>{const s=Math.max(0,Math.round(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
-function save(){try{localStorage.setItem(K,JSON.stringify({basis:S.basis,chk:S.chk,jrn:S.jrn,strikes:S.strikes,mode:S.mode}));}catch(e){}}
-function load(){try{const c=JSON.parse(localStorage.getItem(K)||'{}');if(c.basis!=null)S.basis=c.basis;if(c.chk)S.chk=c.chk;if(c.jrn)S.jrn=c.jrn;if(c.strikes)S.strikes=c.strikes;}catch(e){}}
+function save(){try{localStorage.setItem(K,JSON.stringify({basis:S.basis,chk:S.chk,jrn:S.jrn,strikes:S.strikes,mode:S.mode,si:S.si}));}catch(e){}}
+function load(){try{const c=JSON.parse(localStorage.getItem(K)||'{}');if(c.basis!=null)S.basis=c.basis;if(c.chk)S.chk=c.chk;if(c.jrn)S.jrn=c.jrn;if(c.strikes)S.strikes=c.strikes;if(c.si)S.si=c.si;}catch(e){}}
 function piv(){return{S2:num('pS2'),S1:num('pS1'),P:num('pP'),R1:num('pR1'),R2:num('pR2')};}
 function st(t,c){const e=$('status');e.textContent='Status: '+t;e.className='status'+(c?' '+c:'');}
 
@@ -212,13 +219,27 @@ function setMode(m){S.mode=m;$('mAuto').className='b'+(m==='auto'?' on':'');$('m
  $('autoBox').style.display=m==='auto'?'block':'none';$('manBox').style.display=m==='man'?'block':'none';
  $('modeLbl').textContent=m.toUpperCase();save();}
 
+async function grab(u,ms){
+ const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);
+ try{const r=await fetch(u,{cache:'no-store',signal:c.signal});const x=await r.text();return x;}finally{clearTimeout(t);}
+}
 async function feed(){
  if(S.mode!=='auto')return;
- try{const r=await fetch(FEED,{cache:'no-store'});const j=await r.json();const p=j.chart.result[0].meta.regularMarketPrice;
-  if(!p)throw 0;S.fut=p;$('futIn').value=p.toFixed(2);
-  $('feedSt').className='nst ok';$('feedSt').textContent='Feed: funcționează · NQ '+nf(p);
-  if(S.basis!=null&&!S.demo)onPrice(p+S.basis,'feed');
- }catch(e){$('feedSt').className='nst no';$('feedSt').textContent='Feed blocat. Treci pe Manual sau scrie NQ de mână.';}}
+ const order=[S.si].concat([0,1,2,3].filter(i=>i!==S.si));
+ for(const i of order){
+  try{
+   const txt=await grab(SRC[i](TGT),8000);
+   const j=JSON.parse(txt);
+   const p=j.chart?.result?.[0]?.meta?.regularMarketPrice;
+   if(!p)throw 0;
+   S.fut=p;S.si=i;$('futIn').value=p.toFixed(2);
+   $('feedSt').className='nst ok';$('feedSt').textContent='Feed: funcționează (cale '+(i+1)+') · NQ '+nf(p);
+   if(S.basis!=null&&!S.demo)onPrice(p+S.basis,'feed');
+   save();return;
+  }catch(e){}
+ }
+ $('feedSt').className='nst no';$('feedSt').textContent='Feed blocat. Treci pe Manual sau scrie NQ de mână.';
+}
 
 function arm(){unlock();const p=piv();
  S.bands=[{k:'R2',v:p.R2},{k:'R1',v:p.R1},{k:'P',v:p.P},{k:'S1',v:p.S1},{k:'S2',v:p.S2}].sort((a,b)=>b.v-a.v);
