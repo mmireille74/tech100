@@ -78,7 +78,7 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 <body>
 <div class="wrap">
 <div class="hd">
-  <div class="hd-l"><b>TECH100</b> <span class="tag">v19</span> <span id="badge" class="pill">NEARMAT</span></div>
+  <div class="hd-l"><b>TECH100</b> <span class="tag">v20</span> <span id="badge" class="pill">NEARMAT</span></div>
   <div class="hd-r"><span id="clk">--:--:--</span> <span id="mkt" class="pill">—</span></div>
 </div>
 
@@ -152,7 +152,7 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 
 <script>
 const $=id=>document.getElementById(id);
-const K='t100v19', EXP=20*60*1000, GAPMS=3*60*1000, GAPENT=40;
+const K='t100v20', EXP=20*60*1000, GAPENT=40;
 let S={armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null,entered:0};
 const nf=v=>v==null?'—':Number(v).toLocaleString('ro-RO',{minimumFractionDigits:2,maximumFractionDigits:2});
 const num=id=>parseFloat($(id).value)||0;
@@ -175,7 +175,7 @@ function tick(){const d=new Date();$('clk').textContent=d.toLocaleTimeString('ro
  const rm=((d.getUTCHours()+2)%24)*60+d.getUTCMinutes();const op=rm>=990,sh=rm>=1320;
  $('mkt').textContent=sh?'ÎNCHIS':op?'DESCHIS':'PRE';$('mkt').className='pill '+(sh?'shut':op?'live':'');
  if(S.lastT){const a=Date.now()-S.lastT;const e=$('stale');
-  if(a>GAPMS){e.className='nst no';e.textContent='Preț vechi de '+mmss(a)+'. Următorul e tratat ca salt.';}
+  if(a>180000){e.className='nst no';e.textContent='Preț vechi de '+mmss(a)+'. Semnalul se dă la preț real, nu la bandă.';}
   else{e.className='nst ok';e.textContent='Ultimul preț acum '+mmss(a)+' · '+nf(S.last);}}
  if(S.cur){const l=S.cur.exp-Date.now();const cd=document.getElementById('cd');
   if(cd){if(l<=0){cd.className='cd dead';cd.textContent='EXPIRAT';}else{cd.className='cd'+(l<3e5?' hot':'');cd.textContent='valabil încă '+mmss(l);}}}}
@@ -191,25 +191,20 @@ function calc(d,e){const cap=num('cap'),rk=num('risk'),pv=num('pv')||1,atr=num('
  const sp=Math.max(60,atr*(con?0.55:0.35)),rr=con?3:2;const ru=cap*rk/100;
  const l=lf>0?lf:Math.max(0.1,Math.floor((ru/(sp*pv))*(con?0.5:1)*100)/100);
  return{sp,stop:d==='short'?e+sp:e-sp,tp:d==='short'?e-sp*rr:e+sp*rr,lot:l,rr,con,ru,risk:l*sp*pv,maxStop:ru/(l*pv)};}
-function paintPrev(){
- const p=S.last;
+function paintPrev(){const p=S.last;
  if(!p){$('prev').innerHTML='<div class="dim">Introdu un preț.</div>';return;}
- const rows=['short','long'].map(d=>{const c=calc(d,p),over=c.risk>c.ru;
-  return '<div class="pl'+(over?' hi':'')+'"><span style="color:'+(d==='short'?'#ef4444':'#22c55e')+'">'+d.toUpperCase()+'</span>'+
-  '<span>SL '+nf(c.stop)+' · TP '+nf(c.tp)+' · <b>'+nf(c.risk)+' $</b> ('+nf(c.risk/num('cap')*100)+'%)</span></div>';}).join('');
- $('prev').innerHTML=rows+'<div class="dim" style="margin-top:4px;font-size:10px">calculat la '+nf(p)+' · lot '+(num('lot')>0?num('lot').toFixed(2):'auto')+'</div>';
-}
-function paint(d,e,c,jmp){
- const over=c.risk>c.ru;
+ $('prev').innerHTML=['short','long'].map(d=>{const c=calc(d,p),over=c.risk>c.ru;
+  return '<div class="pl'+(over?' hi':'')+'"><span style="color:'+(d==='short'?'#ef4444':'#22c55e')+'">'+d.toUpperCase()+'</span><span>SL '+nf(c.stop)+' · TP '+nf(c.tp)+' · <b>'+nf(c.risk)+' $</b> ('+nf(c.risk/num('cap')*100)+'%)</span></div>';}).join('')+
+  '<div class="dim" style="margin-top:4px;font-size:10px">calculat la '+nf(p)+' · lot '+(num('lot')>0?num('lot').toFixed(2):'auto')+'</div>';}
+function paint(d,e,c,jmp){const over=c.risk>c.ru;
  $('rec').className='rec';
- $('rec').innerHTML='<b style="color:'+(d==='short'?'#ef4444':'#22c55e')+'">'+(d==='short'?'SHORT':'LONG')+' @ '+nf(e)+'</b>'+(jmp?' <span style="color:#f59e0b">(preț real)</span>':'')+
+ $('rec').innerHTML='<b style="color:'+(d==='short'?'#ef4444':'#22c55e')+'">'+(d==='short'?'SHORT':'LONG')+' @ '+nf(e)+'</b>'+(jmp?' <span style="color:#f59e0b">(salt)</span>':'')+
   '<br>SL '+nf(c.stop)+' ('+nf(c.sp)+' pt) · TP '+nf(c.tp)+' ('+c.rr+'R)'+(c.con?' · <span style="color:#f59e0b">contra</span>':'')+
   '<span class="risk '+(over?'hi':'')+'">Risc la '+c.lot.toFixed(2)+' lot: <b>'+nf(c.risk)+' $</b> ('+nf(c.risk/num('cap')*100)+'%)'+(over?'<br>Peste țintă. Stop ar trebui '+Math.round(c.maxStop)+' pt':'')+'</span>'+
   '<span class="be" id="be">'+(S.entered?'La 1R ('+nf(d==='short'?e-c.sp:e+c.sp)+') mută stopul la intrare.':'')+'</span>'+
   '<span class="ent" id="ent">'+(S.entered?'<span style="color:#22c55e">intrare notată</span>':'<button id="entBtn">AM INTRAT</button>')+'</span>'+
   '<span id="cd" class="cd">valabil 20:00</span>';
- if(!S.entered)$('entBtn').onclick=()=>{S.entered=1;paint(d,e,c,jmp);};
-}
+ if(!S.entered)$('entBtn').onclick=()=>{S.entered=1;paint(d,e,c,jmp);};}
 function fire(d,b){
  const now=Date.now();if(S.cool[b.k]&&now-S.cool[b.k]<90000)return;S.cool[b.k]=now;
  const jmp=Math.abs(S.last-b.v)>GAPENT, e=jmp?S.last:b.v, c=calc(d,e);
@@ -218,9 +213,8 @@ function fire(d,b){
  alarm(lbl);st(lbl,'fire');paint(d,e,c,jmp);
  S.jrn.unshift({t:new Date().toLocaleTimeString('ro-RO'),d,k:b.k,e,tp:c.tp,s:c.stop,l:c.lot.toFixed(2),res:null});drawJrn();save();}
 function reCalc(){paintPrev();if(S.cur)paint(S.cur.d,S.cur.e,calc(S.cur.d,S.cur.e),false);}
-function onPrice(p,src){if(!p||!isFinite(p))return;const now=Date.now();
- if(S.lastT&&now-S.lastT>GAPMS&&!S.demo)S.last=null;
- const prev=S.last;S.last=p;S.lastT=now;$('bigPx').textContent=nf(p);paintPrev();
+function onPrice(p,src){if(!p||!isFinite(p))return;
+ const prev=S.last;S.last=p;S.lastT=Date.now();$('bigPx').textContent=nf(p);paintPrev();
  const rg=reg(p);$('zone').innerHTML='Regim: <b style="color:'+(rg==='short'?'#ef4444':rg==='long'?'#22c55e':'#76849a')+'">'+rg.toUpperCase()+'</b>'+(src==='demo'?' [demo]':'');
  if(!S.armed){$('armLine').className='nst no';$('armLine').textContent='Preț preluat, benzile nu sunt armate.';draw(p);return;}
  if(prev!=null)for(const b of S.bands){if(prev>b.v&&p<=b.v){S.hit[b.k]='d';fire('short',b);}else if(prev<b.v&&p>=b.v){S.hit[b.k]='u';fire('long',b);}}
