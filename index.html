@@ -76,7 +76,7 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 <body>
 <div class="wrap">
 <div class="hd">
-  <div class="hd-l"><b>TECH100</b> <span class="tag">v15</span> <span id="badge" class="pill">NEARMAT</span></div>
+  <div class="hd-l"><b>TECH100</b> <span class="tag">v16</span> <span id="badge" class="pill">NEARMAT</span></div>
   <div class="hd-r"><span id="clk">--:--:--</span> <span id="mkt" class="pill">—</span></div>
 </div>
 <div class="big"><div class="bigp" id="bigPx">—</div><div class="bigm">preț CFD · niciun semnal</div></div>
@@ -153,14 +153,14 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 
 <script>
 const $=id=>document.getElementById(id);
-const K='t100v15', EXP=20*60*1000, GAPMS=3*60*1000, GAPENT=40;
+const K='t100v16', EXP=20*60*1000, GAPMS=3*60*1000, GAPENT=40;
 const TGT='https://query1.finance.yahoo.com/v8/finance/chart/NQ%3DF?interval=1m&range=1d';
 const STOOQ='https://stooq.com/q/l/?s=nq.f&f=sd2t2ohlc&h&e=csv';
 const SRC=[
- ['direct', u=>u],
+ ['jina', u=>'https://r.jina.ai/'+u],
  ['allorigins', u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u)],
  ['codetabs', u=>'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(u)],
- ['jina', u=>'https://r.jina.ai/'+u],
+ ['direct', u=>u],
  ['stooq', ()=>STOOQ]
 ];
 let S={mode:'auto',basis:null,fut:null,armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null,busy:0,fails:0};
@@ -194,15 +194,20 @@ function setMode(m){S.mode=m;$('mAuto').className='b'+(m==='auto'?' on':'');$('m
 
 async function grab(u,ms){
  const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);
- try{const r=await fetch(u,{cache:'no-store',signal:c.signal});
-   const x=await r.text();return {ok:r.ok,code:r.status,txt:x};}
+ try{const r=await fetch(u,{cache:'no-store',signal:c.signal});const x=await r.text();return {ok:r.ok,code:r.status,txt:x};}
  catch(e){return {ok:false,code:0,txt:'',err:e.name||'err'};}
  finally{clearTimeout(t);}
 }
+function extract(txt){
+ const i=txt.indexOf('{"chart"');
+ if(i<0)return txt;
+ const j=txt.lastIndexOf('}');
+ return txt.slice(i,j+1);
+}
 function parse(name,txt){
- try{const j=JSON.parse(txt);const p=j.chart?.result?.[0]?.meta?.regularMarketPrice;if(p)return +p;}catch(e){}
- if(name==='stooq'){const m=txt.match(/nq\.f,[^,]*,[^,]*,([\d.]+),([\d.]+),([\d.]+),([\d.]+)/i);
-  if(m)return +m[4];}
+ const t=name==='jina'?extract(txt):txt;
+ try{const j=JSON.parse(t);const p=j.chart?.result?.[0]?.meta?.regularMarketPrice;if(p)return +p;}catch(e){}
+ if(name==='stooq'){const m=t.match(/nq\.f,[^,]*,[^,]*,([\d.]+),([\d.]+),([\d.]+),([\d.]+)/i);if(m)return +m[4];}
  return 0;
 }
 async function feed(){
@@ -210,10 +215,10 @@ async function feed(){
  const log=[];
  for(const [name,f] of SRC){
   $('feedSt').className='nst';$('feedSt').textContent='Feed: încerc '+name+'…';
-  const r=await grab(f(TGT),name==='stooq'?12000:20000);
+  const r=await grab(f(TGT),name==='jina'?22000:12000);
   if(!r.ok){log.push(name+': '+(r.code?('HTTP '+r.code):(r.err||'blocat')));$('diag').textContent=log.join('\n');continue;}
   const p=parse(name,r.txt);
-  if(!p){log.push(name+': răspuns fără preț ('+r.txt.length+' car.)');$('diag').textContent=log.join('\n');continue;}
+  if(!p){log.push(name+': fără preț ('+r.txt.length+' car.)');$('diag').textContent=log.join('\n');continue;}
   S.fut=p;$('futIn').value=p.toFixed(2);S.fails=0;S.busy=0;
   $('feedSt').className='nst ok';$('feedSt').textContent='Feed: funcționează prin '+name+' · NQ '+nf(p);
   $('diag').textContent=log.join('\n')+(log.length?'\n':'')+name+': OK';
@@ -223,7 +228,7 @@ async function feed(){
  S.busy=0;S.fails++;
  $('feedSt').className='nst no';$('feedSt').textContent='Toate căile blocate.';
  $('diag').textContent=log.join('\n');
- if(S.fails>=2){setMode('man');$('feedSt').textContent='Feed indisponibil — am trecut pe Manual. Scrie prețul CFD.';}
+ if(S.fails>=2){setMode('man');$('feedSt').textContent='Feed indisponibil — trecut pe Manual.';}
 }
 
 function arm(){unlock();const p=piv();
