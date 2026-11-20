@@ -2,291 +2,383 @@
 <html lang="ro">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TECH100</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e1014">
+<title>TECH100 v22</title>
 <style>
-:root{--bg:#0a0e13;--pan:#111721;--line:#1d2634;--txt:#dde5ee;--dim:#76849a;--up:#22c55e;--dn:#ef4444;--acc:#3b82f6;--warn:#f59e0b}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--txt);font:13px/1.45 ui-monospace,Menlo,Consolas,monospace}
-.wrap{max-width:700px;margin:0 auto;padding:10px 10px 24px}
-.hd{display:flex;justify-content:space-between;align-items:center;padding:6px 0 10px;border-bottom:1px solid var(--line);gap:6px}
-.hd b{font-size:17px}.hd-l{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.hd-r{font-size:12px;color:var(--dim);display:flex;gap:6px;align-items:center}
-.tag{font-size:10px;background:var(--acc);color:#fff;padding:2px 5px;border-radius:3px}
-.big{background:#0f1a26;border:1px solid #2a4a72;border-radius:8px;padding:12px;margin:10px 0;text-align:center}
-.bigp{font-size:34px;font-weight:bold;letter-spacing:1px}
-.bigm{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
-.card{background:var(--pan);border:1px solid var(--line);border-radius:7px;padding:10px;margin-bottom:9px}
-.card.hero{border-color:#2a4a72;background:#0f1a26}
-.ct{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.row{display:flex;gap:6px;flex-wrap:wrap}
-input{background:#080c11;border:1px solid var(--line);color:var(--txt);border-radius:4px;padding:6px 7px;font:inherit;font-size:12px;width:100%;min-width:0}
-#px{font-size:18px;padding:10px;font-weight:bold}
-input:focus{outline:none;border-color:var(--acc)}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.grid4 label,.grid2 label{font-size:10px;color:var(--dim);display:block}
-.b{border:1px solid var(--line);background:#161e2a;color:var(--txt);border-radius:4px;padding:7px 12px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
-.b.acc{background:var(--acc);border-color:var(--acc);color:#fff}
-.b.warn{background:#3a2a08;border-color:var(--warn);color:var(--warn)}
-.b.dim{color:var(--dim)}.b.on{background:#12351f;border-color:var(--up);color:var(--up)}
-.b.arm{width:100%;margin-top:9px;padding:12px;font-size:13px;font-weight:bold;background:#1a2330;border-color:#2f3d52}
-.b.arm.on{background:#12351f;border-color:var(--up);color:var(--up)}
-#alarmBox{display:none;background:#b91c1c;border:2px solid #fff;border-radius:7px;padding:12px;text-align:center;margin-bottom:9px;animation:fl .6s infinite alternate}
-@keyframes fl{from{background:#7f1d1d;border-color:#fca5a5}to{background:#ef4444;border-color:#fff}}
-.al-t{font-size:14px;font-weight:bold;letter-spacing:2px;color:#fff}
-.al-s{font-size:12px;margin:6px 0 4px;font-weight:bold;color:#fff}
-.al-m{font-size:10px;color:#fecaca;margin-bottom:9px}
-.al-b{width:100%;background:#fff;color:#7f1d1d;border:none;border-radius:5px;padding:10px;font:inherit;font-size:13px;font-weight:bold;cursor:pointer}
-.nst{font-size:11px;margin-top:8px;padding:6px 8px;border-radius:4px;background:#080c11;border:1px solid var(--line);color:var(--dim);line-height:1.5}
-.nst.ok{color:var(--up);border-color:#1d4a2e}.nst.no{color:var(--warn);border-color:#4a3a10}
-.status{margin-top:8px;font-size:11px;background:#080c11;border:1px solid var(--line);border-left:3px solid var(--dim);border-radius:4px;padding:7px 9px;color:var(--dim)}
-.status.on{border-left-color:var(--up);color:var(--up)}.status.fire{border-left-color:var(--warn);color:var(--warn)}
-.zone{font-size:12px;color:var(--dim);margin-bottom:6px}
-.rec{font-size:12px;line-height:1.55;min-height:18px}.rec.exp{opacity:.45}
-.rec .cd{display:inline-block;font-size:10px;border:1px solid var(--line);border-radius:9px;padding:1px 7px;margin-top:6px;color:var(--dim)}
-.rec .cd.hot{color:var(--warn);border-color:#4a3a10}.rec .cd.dead{color:var(--dn);border-color:#4a1414}
-.rec .risk{display:block;margin-top:6px;padding:6px 8px;border-radius:4px;background:#0d131b;border:1px solid var(--line);font-size:11px}
-.rec .risk.hi{color:var(--warn);border-color:#4a3a10}
-.rec .be{display:block;margin-top:6px;font-size:11px;color:var(--up)}
-.rec .ent{display:block;margin-top:6px}
-.rec .ent button{border:1px solid var(--up);background:#12351f;color:var(--up);border-radius:4px;padding:5px 10px;font:inherit;font-size:11px;cursor:pointer}
-.prev{font-size:11px;line-height:1.8}
-.prev .pl{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #161e2a;padding:3px 0}
-.prev .pl.hi{color:var(--warn)}
-.ladder{margin-top:9px;border-top:1px solid var(--line);padding-top:6px}
-.lr{display:grid;grid-template-columns:44px 1fr 70px;gap:6px;font-size:11px;padding:3px 4px;border-radius:3px;color:var(--dim)}
-.lr.now{background:#1b2331;color:var(--txt);font-weight:bold}
-.lr .v{text-align:right}.lr.hit .k{color:var(--warn)}
-#check div{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:4px 0;font-size:12px;border-bottom:1px solid #161e2a}
-#check .btns{display:flex;gap:4px}
-#check button{width:24px;height:22px;border-radius:3px;border:1px solid var(--line);background:#0d131b;color:var(--dim);cursor:pointer;font:inherit;font-size:11px}
-#check button.ok{background:#12351f;border-color:var(--up);color:var(--up)}
-#check button.no{background:#3a1414;border-color:var(--dn);color:var(--dn)}
-.raport{margin-top:8px;font-size:11px;color:var(--dim)}
-.jctl{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:10px}
-.jrn{font-size:11px}
-.jr{padding:5px 0;border-bottom:1px solid #161e2a;display:grid;grid-template-columns:1fr auto;gap:6px}
-.jr .m{color:var(--dim);font-size:10px}
-.jr button{border:1px solid var(--line);background:#0d131b;color:var(--dim);border-radius:3px;padding:2px 6px;font:inherit;font-size:10px;cursor:pointer;margin-left:3px}
-.pill{font-size:10px;border:1px solid var(--line);border-radius:9px;padding:1px 7px;color:var(--dim);font-weight:normal}
-.pill.live{color:var(--up);border-color:var(--up)}.pill.shut{color:var(--dn);border-color:var(--dn)}
-.pill.armed{color:var(--up);border-color:var(--up);background:#12351f;font-weight:bold}
-details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px}
-.foot{font-size:10px;margin-top:14px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#0e1014;color:#e8e8ea;font:15px/1.4 system-ui,-apple-system,sans-serif;padding:10px 10px 70px}
+.card{background:#171a21;border:1px solid #262b36;border-radius:12px;padding:12px;margin-bottom:10px}
+h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#7d8695;margin:0 0 9px;font-weight:600}
+label{display:block;font-size:12px;color:#8b93a1;margin:8px 0 4px}
+input,select{width:100%;background:#0e1014;border:1px solid #2d3442;border-radius:8px;color:#e8e8ea;padding:11px;font:15px system-ui;font-variant-numeric:tabular-nums}
+input:focus,select:focus{outline:none;border-color:#4a7dff}
+button{background:#232936;border:1px solid #333b4a;color:#e8e8ea;border-radius:9px;padding:12px;font:600 14px system-ui;width:100%;cursor:pointer}
+button:active{transform:scale(.985)}
+.pri{background:#1d4ed8;border-color:#1d4ed8}
+.dan{background:#b91c1c;border-color:#b91c1c}
+.ok{background:#15803d;border-color:#15803d}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.dot{width:9px;height:9px;border-radius:50%;background:#4b5563;flex:none}
+.dot.live{background:#22c55e;box-shadow:0 0 8px #22c55e}
+.dot.slow{background:#eab308}.dot.dead{background:#ef4444}
+#stat{font-size:12px;color:#8b93a1;flex:1}
+#px{font-size:52px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1}
+#px.old{color:#f59e0b}
+#age{font-size:11px;color:#6b7280;margin-top:5px}
+#banner{display:none;border-radius:10px;padding:14px;margin-bottom:10px;text-align:center;font-weight:700;font-size:16px}
+#banner.on{display:block;animation:bl .55s steps(1) infinite}
+#banner.red{background:#b91c1c}
+#banner.blue{background:#1d4ed8}
+@keyframes bl{50%{opacity:.55}}
+#banner small{display:block;font-weight:400;font-size:12px;opacity:.92;margin-top:5px}
+.lvl{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #232936;font-variant-numeric:tabular-nums;font-size:14px}
+.lvl:last-child{border:0}
+.lvl b{color:#9aa4b2;font-weight:600;font-size:12px}
+.lvl .v{font-weight:600}
+.res{color:#f87171}.sup{color:#4ade80}
+table.sig{width:100%;font-size:14px;border-collapse:collapse}
+table.sig td{padding:5px 0;font-variant-numeric:tabular-nums}
+table.sig td:first-child{color:#8b93a1;font-size:12px;width:46%}
+.big{font-size:20px;font-weight:700}
+.jr{font-size:12px;border-bottom:1px solid #232936;padding:7px 0;font-variant-numeric:tabular-nums}
+.jr:last-child{border:0}
+.warn{background:#3f2d0a;border:1px solid #78500f;color:#fbbf24;padding:8px;border-radius:8px;font-size:12px;margin-top:8px}
+.bad{background:#3f0d0d;border:1px solid #7f1d1d;color:#f87171;padding:8px;border-radius:8px;font-size:12px;margin-top:8px}
+.mini{font-size:11px;color:#6b7280;margin-top:6px}
+.lock{background:#3f0d0d;border:1px solid #7f1d1d;color:#f87171;padding:10px;border-radius:8px;font-size:13px;text-align:center;font-weight:600}
 </style>
 </head>
 <body>
-<div class="wrap">
-<div class="hd">
-  <div class="hd-l"><b>TECH100</b> <span class="tag">v21</span> <span id="badge" class="pill">NEARMAT</span></div>
-  <div class="hd-r"><span id="clk">--:--:--</span> <span id="mkt" class="pill">—</span></div>
+
+<div class="hdr">
+  <div class="dot" id="dot"></div>
+  <div id="stat">neconectat</div>
+  <div style="font-size:11px;color:#4b5563">v22</div>
 </div>
 
-<div class="big"><div class="bigp" id="bigPx">—</div><div class="bigm">preț CFD · niciun semnal</div></div>
+<div id="banner"><span id="btxt"></span><small id="bsub"></small></div>
 
 <div class="card">
-  <div class="ct">Sursă preț <span id="modeLbl" class="pill">AUTO</span></div>
-  <div class="row"><button id="mAuto" class="b on">Automat</button><button id="mMan" class="b">Manual</button></div>
-  <div id="autoBox">
-    <div class="grid2" style="margin-top:8px">
-      <label>Preț CFD sell<input id="cfdIn" type="number" step="0.01" placeholder="ex. 26050"></label>
-      <label>NQ<input id="futIn" type="number" step="0.01" placeholder="din feed"></label>
-    </div>
-    <div class="row" style="margin-top:6px"><button id="setBas" class="b acc">Setează baza</button><button id="retry" class="b dim">Reîncearcă</button></div>
-    <div id="feedSt" class="nst">Feed: se verifică…</div>
+  <div id="px">—</div>
+  <div id="age">preț: —</div>
+  <div class="row" style="margin-top:10px">
+    <button onclick="toggleFeed()" id="fb">Conectează</button>
+    <button onclick="openS()">Setări</button>
   </div>
-  <div id="manBox" style="display:none">
-    <div class="row" style="margin-top:8px"><input id="px" type="number" step="0.01" inputmode="decimal" placeholder="prețul sell din Trading 212"><button id="pxBtn" class="b acc">Trimite</button></div>
-  </div>
-  <div id="stale" class="nst">Niciun preț încă.</div>
 </div>
 
-<div class="card">
-  <div class="ct">Parametri</div>
-  <div class="grid4">
-    <label>Capital $<input id="cap" type="number" value="4393"></label>
-    <label>Risc țintă %<input id="risk" type="number" step="0.1" value="0.6"></label>
-    <label>Val. punct la lot 1<input id="pv" type="number" step="0.1" value="1"></label>
-    <label>ATR<input id="atr" type="number" value="1000"></label>
-  </div>
-  <div class="grid4" style="margin-top:6px">
-    <label>Lot fix (0 = calculat)<input id="lot" type="number" step="0.05" value="0.15"></label>
-    <label>S2<input class="pv" id="pS2" type="number" step="0.01" value="25505.95"></label>
-    <label>S1<input class="pv" id="pS1" type="number" step="0.01" value="26016.40"></label>
-    <label>P<input class="pv" id="pP" type="number" step="0.01" value="26926.53"></label>
-  </div>
-  <div class="grid4" style="margin-top:6px">
-    <label>R1<input class="pv" id="pR1" type="number" step="0.01" value="27436.98"></label>
-    <label>R2<input class="pv" id="pR2" type="number" step="0.01" value="28347.11"></label>
-    <label> </label><label> </label>
-  </div>
-  <button id="armBtn" class="b arm">ARMEAZĂ BENZILE</button>
-  <div id="armLine" class="nst">Benzile nu sunt armate.</div>
+<div class="card" id="set" style="display:none">
+  <h2>Setări</h2>
+  <label>Cheie Finnhub</label>
+  <input id="key" placeholder="cheia">
+  <label>Capital $</label>
+  <input id="cap" type="number" inputmode="decimal">
+  <label>Lot</label>
+  <input id="lot" type="number" inputmode="decimal" step="0.01">
+  <label>Distanță stop (puncte)</label>
+  <input id="stp" type="number" inputmode="decimal">
+  <div class="mini" id="risktxt"></div>
+  <label style="margin-top:14px">Pivot R2</label>
+  <input id="pR2" type="number" inputmode="decimal">
+  <label>Pivot R1</label>
+  <input id="pR1" type="number" inputmode="decimal">
+  <label>Pivot P</label>
+  <input id="pP" type="number" inputmode="decimal">
+  <label>Pivot S1</label>
+  <input id="pS1" type="number" inputmode="decimal">
+  <label>Pivot S2</label>
+  <input id="pS2" type="number" inputmode="decimal">
+  <div class="mini" id="pivtxt"></div>
+  <button onclick="saveS()" class="ok" style="margin-top:12px">Salvează</button>
+  <button onclick="closeS()" style="margin-top:8px">Închide</button>
 </div>
 
 <div class="card">
-  <div class="ct">Previzualizare la prețul curent</div>
-  <div id="prev" class="prev"><div class="dim">Introdu un preț.</div></div>
+  <h2>Baza CFD</h2>
+  <div id="basistxt" class="mini">bază: —</div>
+  <label>Preț CFD real acum</label>
+  <input id="cfd" type="number" inputmode="decimal" placeholder="ex. 25150">
+  <button onclick="setBasis()" class="pri" style="margin-top:8px">Setează baza</button>
 </div>
 
 <div class="card">
-  <div class="ct">Recomandare</div>
-  <div id="zone" class="zone">—</div>
-  <div id="rec" class="rec"></div>
-  <div id="ladder" class="ladder"></div>
-</div>
-
-<div id="alarmBox">
-  <div class="al-t">⚠ ALARMĂ</div><div class="al-s" id="alarmTxt">—</div>
-  <div class="al-m" id="alarmMeta">sună de 0:00</div>
-  <button class="al-b" onclick="stopAlarm()">OPREȘTE ALARMA</button>
+  <h2>Niveluri</h2>
+  <div id="lvls"><div class="mini">introdu pivoții în Setări</div></div>
 </div>
 
 <div class="card">
-  <div class="ct">Jurnal <span id="strk" class="pill">strike 0/2</span></div>
-  <div class="jctl"><button id="clearJ" class="b dim">Golește</button><span id="jcount" class="dim">0 intrări</span></div>
-  <div id="jrn" class="jrn"><div class="dim">Gol.</div></div>
+  <h2>Armare</h2>
+  <div id="lockbox"></div>
+  <label>Long peste</label>
+  <select id="armL"></select>
+  <button onclick="arm('L')" id="btnL" style="margin-top:8px">Armează long</button>
+  <label style="margin-top:10px">Short sub</label>
+  <select id="armS"></select>
+  <button onclick="arm('S')" id="btnS" style="margin-top:8px">Armează short</button>
+  <div class="mini" id="cnttxt"></div>
 </div>
 
-<details class="card">
-  <summary>Test și verificare</summary>
-  <div class="row" style="margin-top:8px"><button id="testSig" class="b warn">Test alarmă</button><button id="demo" class="b acc">Mod demo</button><button id="reset" class="b dim">Reset</button></div>
-  <div id="status" class="status">Status: în așteptare.</div>
-  <div id="check" style="margin-top:8px"></div>
-  <div id="raport" class="raport">Rezultat: 0/8 bifate.</div>
-</details>
-<div class="foot dim">Nu e sfat financiar.</div>
+<div class="card">
+  <h2>Semnal</h2>
+  <div id="sig"><div class="mini">niciun semnal</div></div>
+</div>
+
+<div class="card">
+  <h2>Jurnal <span id="stats" style="color:#6b7280;font-weight:400;text-transform:none;letter-spacing:0"></span></h2>
+  <div id="jr"></div>
+  <div class="row" style="margin-top:10px">
+    <button onclick="closeSig('win')" class="ok">Win</button>
+    <button onclick="closeSig('loss')" class="dan">Loss</button>
+  </div>
+  <button onclick="clearJ()" style="margin-top:8px">Golește jurnalul</button>
 </div>
 
 <script>
-const $=id=>document.getElementById(id);
-const K='t100v21', EXP=20*60*1000, GAPENT=40, FEEDMS=60000;
-const TGT='https://query1.finance.yahoo.com/v8/finance/chart/NQ%3DF?interval=5m&range=1d';
-const SRC=[u=>'https://r.jina.ai/'+u, u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u), u=>u];
-let S={mode:'auto',basis:null,fut:null,armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null,entered:0,busy:0,fails:0};
-const nf=v=>v==null?'—':Number(v).toLocaleString('ro-RO',{minimumFractionDigits:2,maximumFractionDigits:2});
-const num=id=>parseFloat($(id).value)||0;
-const mmss=ms=>{const s=Math.max(0,Math.round(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
-function save(){try{localStorage.setItem(K,JSON.stringify({basis:S.basis,chk:S.chk,jrn:S.jrn,strikes:S.strikes,mode:S.mode}));}catch(e){}}
-function load(){try{const c=JSON.parse(localStorage.getItem(K)||'{}');if(c.basis!=null)S.basis=c.basis;if(c.chk)S.chk=c.chk;if(c.jrn)S.jrn=c.jrn;if(c.strikes)S.strikes=c.strikes;}catch(e){}}
-function piv(){return{S2:num('pS2'),S1:num('pS1'),P:num('pP'),R1:num('pR1'),R2:num('pR2')};}
-function st(t,c){const e=$('status');e.textContent='Status: '+t;e.className='status'+(c?' '+c:'');}
-let ac=null,on=0,at=null,am=null,a0=0;
-function unlock(){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==='suspended')ac.resume();}catch(e){}}
-function tone(){try{if(!ac)return;const t0=ac.currentTime;for(let i=0;i<3;i++){const o=ac.createOscillator(),g=ac.createGain(),t=t0+i*0.34;o.type='square';o.frequency.setValueAtTime(820,t);o.frequency.linearRampToValueAtTime(1380,t+0.26);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.3,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.32);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+0.33);}}catch(e){}}
-function vib(){try{if(navigator.vibrate)navigator.vibrate([500,200,500]);}catch(e){}}
-function alarm(l){unlock();stopAlarm();on=1;a0=Date.now();$('alarmBox').style.display='block';$('alarmTxt').textContent=l;
- try{$('alarmBox').scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}
- const lp=()=>{if(!on)return;const e=Date.now()-a0;if(e>600000){stopAlarm();return;}tone();vib();at=setTimeout(lp,e>60000?4000:1500);};
- lp();am=setInterval(()=>{if(!on)return;$('alarmMeta').textContent='sună de '+mmss(Date.now()-a0);},1000);}
-function stopAlarm(){on=0;clearTimeout(at);clearInterval(am);$('alarmBox').style.display='none';}
-window.stopAlarm=stopAlarm;
-function tick(){const d=new Date();$('clk').textContent=d.toLocaleTimeString('ro-RO');
- const rm=((d.getUTCHours()+2)%24)*60+d.getUTCMinutes();const op=rm>=990,sh=rm>=1320;
- $('mkt').textContent=sh?'ÎNCHIS':op?'DESCHIS':'PRE';$('mkt').className='pill '+(sh?'shut':op?'live':'');
- if(S.lastT){const a=Date.now()-S.lastT;const e=$('stale');
-  if(a>180000){e.className='nst no';e.textContent='Preț vechi de '+mmss(a)+'. Semnalul se dă la preț real.';}
-  else{e.className='nst ok';e.textContent='Ultimul preț acum '+mmss(a)+' · '+nf(S.last);}}
- if(S.cur){const l=S.cur.exp-Date.now();const cd=document.getElementById('cd');
-  if(cd){if(l<=0){cd.className='cd dead';cd.textContent='EXPIRAT';}else{cd.className='cd'+(l<3e5?' hot':'');cd.textContent='valabil încă '+mmss(l);}}}}
-function setMode(m){S.mode=m;$('mAuto').className='b'+(m==='auto'?' on':'');$('mMan').className='b'+(m==='man'?' on':'');
- $('autoBox').style.display=m==='auto'?'block':'none';$('manBox').style.display=m==='man'?'block':'none';$('modeLbl').textContent=m==='auto'?'AUTO':'MANUAL';save();}
-async function grab(u,ms){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);
- try{const r=await fetch(u,{cache:'no-store',signal:c.signal});const x=await r.text();return {ok:r.ok,txt:x};}
- catch(e){return {ok:false,txt:''};}finally{clearTimeout(t);}}
-function extract(t){const i=t.indexOf('{"chart"');if(i<0)return t;const j=t.lastIndexOf('}');return t.slice(i,j+1);}
-function parse(i,txt){const t=i===0?extract(txt):txt;
- try{const j=JSON.parse(t);const p=j.chart?.result?.[0]?.meta?.regularMarketPrice;if(p)return +p;}catch(e){}return 0;}
-async function feed(){
- if(S.mode!=='auto'||S.busy||S.demo)return;S.busy=1;
- for(let i=0;i<SRC.length;i++){
-  const r=await grab(SRC[i](TGT),i===0?20000:10000);
-  if(!r.ok)continue;
-  const p=parse(i,r.txt);if(!p)continue;
-  S.fut=p;S.fails=0;S.busy=0;$('futIn').value=p.toFixed(2);
-  $('feedSt').className='nst ok';$('feedSt').textContent='Feed: funcționează · NQ '+nf(p)+(S.basis==null?' — setează baza':'');
-  if(S.basis!=null)onPrice(p+S.basis,'feed');
-  return;
- }
- S.busy=0;S.fails++;
- $('feedSt').className='nst no';$('feedSt').textContent='Feed căzut ('+S.fails+').';
- if(S.fails>=2){setMode('man');$('feedSt').textContent='Feed căzut de 2 ori — am trecut pe Manual. Scrie prețul CFD.';}
+var FACT=41.37, K='t100_v22', s={}, ws=null, idx=null, prevIdx=null, lastT=0,
+    basis=null, basisT=0, A={L:null,S:null}, sig=null, strikes=0, jr=[], trades=0, dayKey='',
+    alarm=null, ctx=null, timers=[], wsFail=0, restT=null, beDone=false;
+
+function g(id){return document.getElementById(id)}
+function n(v,d){v=parseFloat(v);return isNaN(v)?d:v}
+function today(){return new Date().toISOString().slice(0,10)}
+
+function load(){
+  try{s=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){s={}}
+  g('key').value=s.key||'dc0d679r01qs4ks41jbgdc0d679r01qs4ks41jc0';
+  g('cap').value=s.cap||4393; g('lot').value=s.lot||0.1; g('stp').value=s.stp||200;
+  g('pR2').value=s.pR2||''; g('pR1').value=s.pR1||''; g('pP').value=s.pP||''; g('pS1').value=s.pS1||''; g('pS2').value=s.pS2||'';
+  jr=s.jr||[]; basis=s.basis||null; basisT=s.basisT||0; strikes=s.strikes||0;
+  dayKey=s.dayKey||today(); trades=s.trades||0;
+  if(dayKey!==today()){dayKey=today();trades=0;strikes=0}
+  buildSel(); paint(); renderJ(); riskTxt();
+  if(g('key').value) toggleFeed();
 }
-function arm(){unlock();const p=piv();
- S.bands=[{k:'R2',v:p.R2},{k:'R1',v:p.R1},{k:'P',v:p.P},{k:'S1',v:p.S1},{k:'S2',v:p.S2}].sort((a,b)=>b.v-a.v);
- S.armed=true;S.hit={};S.cool={};const t=new Date().toLocaleTimeString('ro-RO');
- $('armBtn').className='b arm on';$('armBtn').textContent='ARMAT ✓';
- $('armLine').className='nst ok';$('armLine').textContent='Armat la '+t+'.';
- $('badge').className='pill armed';$('badge').textContent='ARMAT';st('armat la '+t,'on');draw();}
-function reg(p){const x=piv();if(p<x.S1)return'short';if(p>x.R1)return'long';return'neutru';}
-function calc(d,e){const cap=num('cap'),rk=num('risk'),pv=num('pv')||1,atr=num('atr')||900,lf=num('lot');
- const rg=reg(e);const con=(rg==='short'&&d==='long')||(rg==='long'&&d==='short');
- const sp=Math.max(60,atr*(con?0.55:0.35)),rr=con?3:2;const ru=cap*rk/100;
- const l=lf>0?lf:Math.max(0.1,Math.floor((ru/(sp*pv))*(con?0.5:1)*100)/100);
- return{sp,stop:d==='short'?e+sp:e-sp,tp:d==='short'?e-sp*rr:e+sp*rr,lot:l,rr,con,ru,risk:l*sp*pv,maxStop:ru/(l*pv)};}
-function paintPrev(){const p=S.last;
- if(!p){$('prev').innerHTML='<div class="dim">Introdu un preț.</div>';return;}
- $('prev').innerHTML=['short','long'].map(d=>{const c=calc(d,p),over=c.risk>c.ru;
-  return '<div class="pl'+(over?' hi':'')+'"><span style="color:'+(d==='short'?'#ef4444':'#22c55e')+'">'+d.toUpperCase()+'</span><span>SL '+nf(c.stop)+' · TP '+nf(c.tp)+' · <b>'+nf(c.risk)+' $</b> ('+nf(c.risk/num('cap')*100)+'%)</span></div>';}).join('')+
-  '<div class="dim" style="margin-top:4px;font-size:10px">la '+nf(p)+' · lot '+(num('lot')>0?num('lot').toFixed(2):'auto')+'</div>';}
-function paint(d,e,c,jmp){const over=c.risk>c.ru;
- $('rec').className='rec';
- $('rec').innerHTML='<b style="color:'+(d==='short'?'#ef4444':'#22c55e')+'">'+(d==='short'?'SHORT':'LONG')+' @ '+nf(e)+'</b>'+(jmp?' <span style="color:#f59e0b">(salt)</span>':'')+
-  '<br>SL '+nf(c.stop)+' ('+nf(c.sp)+' pt) · TP '+nf(c.tp)+' ('+c.rr+'R)'+(c.con?' · <span style="color:#f59e0b">contra</span>':'')+
-  '<span class="risk '+(over?'hi':'')+'">Risc la '+c.lot.toFixed(2)+' lot: <b>'+nf(c.risk)+' $</b> ('+nf(c.risk/num('cap')*100)+'%)'+(over?'<br>Peste țintă. Stop ar trebui '+Math.round(c.maxStop)+' pt':'')+'</span>'+
-  '<span class="be" id="be">'+(S.entered?'La 1R ('+nf(d==='short'?e-c.sp:e+c.sp)+') mută stopul la intrare.':'')+'</span>'+
-  '<span class="ent" id="ent">'+(S.entered?'<span style="color:#22c55e">intrare notată</span>':'<button id="entBtn">AM INTRAT</button>')+'</span>'+
-  '<span id="cd" class="cd">valabil 20:00</span>';
- if(!S.entered)$('entBtn').onclick=()=>{S.entered=1;paint(d,e,c,jmp);};}
-function fire(d,b){
- const now=Date.now();if(S.cool[b.k]&&now-S.cool[b.k]<90000)return;S.cool[b.k]=now;
- const jmp=Math.abs(S.last-b.v)>GAPENT, e=jmp?S.last:b.v, c=calc(d,e);
- S.cur={exp:now+EXP,d:d,e:e};S.entered=0;
- const lbl=(d==='short'?'SHORT':'LONG')+' la '+b.k+' @ '+nf(e)+' · SL '+nf(c.stop)+' · TP '+nf(c.tp);
- alarm(lbl);st(lbl,'fire');paint(d,e,c,jmp);
- S.jrn.unshift({t:new Date().toLocaleTimeString('ro-RO'),d,k:b.k,e,tp:c.tp,s:c.stop,l:c.lot.toFixed(2),res:null});drawJrn();save();}
-function reCalc(){paintPrev();if(S.cur)paint(S.cur.d,S.cur.e,calc(S.cur.d,S.cur.e),false);}
-function onPrice(p,src){if(!p||!isFinite(p))return;
- const prev=S.last;S.last=p;S.lastT=Date.now();$('bigPx').textContent=nf(p);paintPrev();
- const rg=reg(p);$('zone').innerHTML='Regim: <b style="color:'+(rg==='short'?'#ef4444':rg==='long'?'#22c55e':'#76849a')+'">'+rg.toUpperCase()+'</b>'+(src==='demo'?' [demo]':'');
- if(!S.armed){$('armLine').className='nst no';$('armLine').textContent='Preț preluat, benzile nu sunt armate.';draw(p);return;}
- if(prev!=null)for(const b of S.bands){if(prev>b.v&&p<=b.v){S.hit[b.k]='d';fire('short',b);}else if(prev<b.v&&p>=b.v){S.hit[b.k]='u';fire('long',b);}}
- draw(p);}
-function draw(cur){const p=piv();const rows=[['R2',p.R2],['R1',p.R1],['P',p.P],['S1',p.S1],['S2',p.S2]];
- $('ladder').innerHTML=rows.map(([k,v])=>'<div class="lr '+(cur&&Math.abs(cur-v)<(num('atr')||900)*0.06?'now':'')+(S.hit[k]?' hit':'')+'"><span class="k">'+k+'</span><span>'+(S.hit[k]?'✓':'')+'</span><span class="v">'+nf(v)+'</span></div>').join('');}
-function drawJrn(){$('strk').textContent='strike '+S.strikes+'/2';$('jcount').textContent=S.jrn.length+' intrări';
- if(!S.jrn.length){$('jrn').innerHTML='<div class="dim">Gol.</div>';return;}
- $('jrn').innerHTML=S.jrn.map((r,i)=>{const c=r.res==='win'?'#22c55e':r.res==='loss'?'#ef4444':'#76849a';
-  return '<div class="jr"><div><b style="color:'+c+'">'+(r.d==='short'?'SHORT':'LONG')+' '+r.k+'</b> @ '+nf(r.e)+'<div class="m">'+r.t+' · SL '+nf(r.s)+' · TP '+nf(r.tp)+' · lot '+r.l+'</div></div><div>'+(r.res?'<span style="color:'+c+'">'+r.res.toUpperCase()+'</span>':'<button data-w="'+i+'">WIN</button><button data-l="'+i+'">LOSS</button>')+'</div></div>';}).join('');
- $('jrn').querySelectorAll('button[data-w]').forEach(b=>b.onclick=()=>mark(+b.dataset.w,'win'));
- $('jrn').querySelectorAll('button[data-l]').forEach(b=>b.onclick=()=>mark(+b.dataset.l,'loss'));}
-function mark(i,r){if(S.jrn[i].res)return;S.jrn[i].res=r;S.strikes=r==='loss'?S.strikes+1:0;drawJrn();save();}
-const IT=['Preț preluat','Avertisment preț vechi','Alarmă în buclă','Bandă roșie cu oprire','Short la traversare','Long la traversare','Risc în $ afișat','Strike se mișcă'];
-function drawChk(){$('check').innerHTML=IT.map((t,i)=>{const s=S.chk[i]||'';
- return '<div><span>'+t+'</span><span class="btns"><button data-i="'+i+'" data-v="ok" class="'+(s==='ok'?'ok':'')+'">✓</button><button data-i="'+i+'" data-v="no" class="'+(s==='no'?'no':'')+'">✗</button></span></div>';}).join('');
- $('check').querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=b.dataset.i;S.chk[i]=S.chk[i]===b.dataset.v?'':b.dataset.v;drawChk();save();});
- const n=Object.values(S.chk).filter(v=>v==='ok').length;$('raport').textContent='Rezultat: '+n+'/'+IT.length;}
-const DEMO=[26400,26370,26330,26290,26240,26190,26140,26090,26040,26010,25970,25920,25860,25800,25740,25680,25620,25570,25520,25505,25560,25620,25690,25760,25840,25920,26000,26060,26120,26190,26260,26330,26400];
-function demo(){unlock();if(!S.armed)arm();S.demo=1;S.demoI=0;S.last=null;st('demo','fire');clearInterval(window._d);
- window._d=setInterval(()=>{if(S.demoI>=DEMO.length){clearInterval(window._d);S.demo=0;S.last=null;st('demo terminat','on');return;}onPrice(DEMO[S.demoI],'demo');S.demoI++;},700);}
-function subPx(){const v=parseFloat($('px').value);if(!v)return;onPrice(v,'m');$('px').value='';$('px').focus();}
-$('pxBtn').onclick=subPx;$('px').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();subPx();}});
-$('mAuto').onclick=()=>{setMode('auto');S.fails=0;feed();};$('mMan').onclick=()=>setMode('man');
-$('setBas').onclick=()=>{const v=parseFloat($('cfdIn').value);let f=S.fut;const m=parseFloat($('futIn').value);if(m)f=m;
- if(!v){$('feedSt').textContent='Lipsește prețul CFD.';return;}if(!f){$('feedSt').textContent='Lipsește NQ.';return;}
- S.basis=+(v-f).toFixed(2);$('feedSt').className='nst ok';$('feedSt').textContent='Bază '+nf(S.basis)+' pt.';save();};
-$('retry').onclick=()=>{S.fails=0;feed();};
-$('armBtn').onclick=arm;
-$('testSig').onclick=()=>{unlock();alarm('TEST alarmă.',30);st('test','fire');};
-$('demo').onclick=demo;
-$('reset').onclick=()=>{S.armed=0;S.last=null;S.lastT=0;S.hit={};S.bands=[];S.cur=null;$('rec').innerHTML='';$('prev').innerHTML='<div class="dim">Introdu un preț.</div>';
- $('armBtn').className='b arm';$('armBtn').textContent='ARMEAZĂ BENZILE';$('armLine').className='nst';$('armLine').textContent='Benzile nu sunt armate.';
- $('badge').className='pill';$('badge').textContent='NEARMAT';st('reset');draw();};
-$('clearJ').onclick=()=>{S.jrn=[];S.strikes=0;drawJrn();save();};
-load();drawChk();drawJrn();draw();tick();setMode('auto');feed();setInterval(tick,1000);setInterval(feed,FEEDMS);
-document.querySelectorAll('input').forEach(i=>i.addEventListener('input',reCalc));
-document.querySelectorAll('.pv').forEach(i=>i.addEventListener('change',()=>{if(S.armed)arm();}));
+function save(){s.key=g('key').value.trim();s.cap=n(g('cap').value,4393);s.lot=n(g('lot').value,0.1);
+  s.stp=n(g('stp').value,200);s.pR2=n(g('pR2').value,0);s.pR1=n(g('pR1').value,0);
+  s.pP=n(g('pP').value,0);s.pS1=n(g('pS1').value,0);s.pS2=n(g('pS2').value,0);
+  s.jr=jr;s.basis=basis;s.basisT=basisT;s.strikes=strikes;s.trades=trades;s.dayKey=dayKey;
+  localStorage.setItem(K,JSON.stringify(s))}
+function saveS(){save();buildSel();paint();riskTxt();closeS()}
+function openS(){g('set').style.display='block';riskTxt()}
+function closeS(){g('set').style.display='none'}
+function riskTxt(){
+  var lot=n(g('lot').value,0), st=n(g('stp').value,0), cap=n(g('cap').value,0);
+  if(!lot||!st||!cap){g('risktxt').textContent='';return}
+  var r=lot*st;
+  g('risktxt').textContent='Risc: '+r.toFixed(2)+' $ ('+(r/cap*100).toFixed(2)+'% din cont)';
+  g('risktxt').style.color = r/cap>0.02?'#f87171':r/cap>0.012?'#fbbf24':'#6b7280';
+}
+
+function piv(){var o={};
+  ['R2','R1','P','S1','S2'].forEach(function(k){o[k]=n(g('p'+k).value,0)});
+  if(!o.R2||!o.R1||!o.P||!o.S1||!o.S2)return null; return o}
+function buildSel(){
+  var p=piv(),opts='';
+  if(p)['R2','R1','P','S1','S2'].forEach(function(k){opts+='<option value="'+k+'">'+k+'</option>'});
+  g('armL').innerHTML=opts; g('armS').innerHTML=opts;
+  if(p){g('armL').value='R1';g('armS').value='S1'}
+}
+
+function toggleFeed(){
+  if(ws){killFeed();return}
+  var k=g('key').value.trim();
+  if(!k){openS();return}
+  save(); beDone=false;
+  try{
+    ws=new WebSocket('wss://ws.finnhub.io?token='+k);
+    ws.onopen=function(){wsFail=0;ws.send(JSON.stringify({type:'subscribe',symbol:'QQQ'}));
+      g('stat').textContent='LIVE';g('fb').textContent='Deconectează';if(restT){clearInterval(restT);restT=null}};
+    ws.onmessage=function(e){
+      var m=JSON.parse(e.data);
+      if(m.type!=='trade'||!m.data)return;
+      for(var i=0;i<m.data.length;i++)if(m.data[i].s==='QQQ')tick(m.data[i].p*FACT);
+    };
+    ws.onerror=function(){wsFail++;g('stat').textContent='eroare'};
+    ws.onclose=function(){ws=null;g('fb').textContent='Conectează';g('stat').textContent='deconectat';
+      g('dot').className='dot';startRest()};
+  }catch(e){g('stat').textContent='WS blocat';startRest()}
+}
+function killFeed(){if(ws){ws.close();ws=null}g('fb').textContent='Conectează';g('stat').textContent='oprit';
+  g('dot').className='dot';if(restT){clearInterval(restT);restT=null}}
+function startRest(){
+  if(restT)return;
+  restT=setInterval(function(){
+    if(ws)return;
+    var k=g('key').value.trim(); if(!k)return;
+    fetch('https://finnhub.io/api/v1/quote?symbol=QQQ&token='+k)
+      .then(function(r){return r.json()})
+      .then(function(d){if(d&&d.c)tick(d.c*FACT)})
+      .catch(function(){g('stat').textContent='flux mort'});
+  },15000);
+}
+
+function tick(v){
+  prevIdx=idx; idx=v; lastT=Date.now();
+  g('dot').className='dot live'; g('stat').textContent='LIVE';
+  paint(); check(); checkBE();
+}
+function age(){
+  if(!lastT){g('age').textContent='preț: —';return}
+  var a=Math.floor((Date.now()-lastT)/1000);
+  g('age').textContent='preț: acum '+a+'s';
+  if(a>60){g('dot').className='dot dead';g('px').className='old'}
+  else if(a>20){g('dot').className='dot slow';g('px').className='old'}
+  else{g('dot').className='dot live';g('px').className=''}
+  paintBasis();
+}
+function cfdOf(i){return basis===null?null:i+basis}
+
+function paint(){
+  if(idx!==null){var c=cfdOf(idx); g('px').textContent=c===null?'—':c.toFixed(2)}
+  else g('px').textContent='—';
+  paintBasis(); paintLvls(); paintSig(); lockBox();
+}
+function paintBasis(){
+  if(basis===null){g('basistxt').textContent='bază: nesetată';g('basistxt').style.color='#f87171';return}
+  var m=Math.floor((Date.now()-basisT)/60000);
+  g('basistxt').textContent='bază: '+(basis>0?'+':'')+basis.toFixed(2)+' · acum '+m+' min';
+  g('basistxt').style.color = m>40?'#f87171':m>20?'#fbbf24':'#6b7280';
+}
+function setBasis(){
+  var c=n(g('cfd').value,0);
+  if(!c){alert('introdu prețul CFD');return}
+  if(idx===null){alert('fără preț de la flux');return}
+  basis=c-idx; basisT=Date.now(); save(); paint(); g('cfd').value='';
+}
+function paintLvls(){
+  var p=piv();
+  if(!p){g('lvls').innerHTML='<div class="mini">introdu pivoții în Setări</div>';return}
+  var h='';
+  [['R2','res'],['R1','res'],['P',''],['S1','sup'],['S2','sup']].forEach(function(x){
+    var v=p[x[0]], cf=basis===null?v:v+basis;
+    h+='<div class="lvl"><b class="'+x[1]+'">'+x[0]+'</b><span class="v '+x[1]+'">'+cf.toFixed(2)+'</span></div>';
+  });
+  g('lvls').innerHTML=h;
+}
+
+function lockBox(){
+  var lk='';
+  if(strikes>=2)lk='<div class="lock">2 strike-uri — gata pe zi</div>';
+  else if(trades>=2)lk='<div class="lock">2 intrări atinse — gata pe zi</div>';
+  g('lockbox').innerHTML=lk;
+  g('cnttxt').textContent='Intrări azi: '+trades+'/2 · Strike: '+strikes+'/2';
+}
+
+function arm(side){
+  if(strikes>=2||trades>=2){alert('limita zilei atinsă');return}
+  var p=piv(); if(!p){alert('pivoții întâi');return}
+  if(idx===null){alert('fără preț');return}
+  if(A[side]){A[side]=null;g('btn'+side).textContent='Armează '+(side==='L'?'long':'short');g('btn'+side).className='';return}
+  var k=side==='L'?g('armL').value:g('armS').value;
+  A[side]={lv:k,px:p[k]};
+  g('btn'+side).textContent='ARMAT '+(side==='L'?'peste ':'sub ')+k;
+  g('btn'+side).className='pri';
+}
+
+function check(){
+  if(idx===null||prevIdx===null)return;
+  ['L','S'].forEach(function(sd){
+    var a=A[sd]; if(!a)return;
+    if(sd==='L'&&prevIdx<=a.px&&idx>a.px)fire('long',a.lv);
+    if(sd==='S'&&prevIdx>=a.px&&idx<a.px)fire('short',a.lv);
+  });
+}
+function fire(dir,lv){
+  A.L=null;A.S=null;
+  g('btnL').textContent='Armează long';g('btnL').className='';g('btnS').textContent='Armează short';g('btnS').className='';
+  var entry=cfdOf(idx); if(entry===null)entry=idx;
+  sig={dir:dir,lv:lv,entry:entry,t:Date.now()};
+  trades++; beDone=false; save(); lockBox();
+  g('banner').className='on red';
+  g('btxt').textContent=(dir==='long'?'LONG peste ':'SHORT sub ')+lv+' @ '+entry.toFixed(2);
+  g('bsub').textContent='ATINGERE — apasă ca să oprești';
+  g('banner').onclick=stopRing;
+  ring(dir==='long'?880:660,dir==='long'?1180:440,420);
+  try{navigator.vibrate([300,150,300,150,600])}catch(e){}
+  try{if(window.Notification&&Notification.permission==='granted')
+    new Notification('TECH100 '+dir.toUpperCase()+' '+lv,{body:'atingere @ '+entry.toFixed(2)})}catch(e){}
+  paintSig();
+}
+
+function checkBE(){
+  if(!sig||beDone)return;
+  var d=n(g('stp').value,200), dir=sig.dir==='long'?1:-1;
+  var c=cfdOf(idx); if(c===null)return;
+  var gain=(c-sig.entry)*dir;
+  if(gain>=d){
+    beDone=true; sig.be=true;
+    g('banner').className='on blue';
+    g('btxt').textContent='1R atins — mută stopul la break-even';
+    g('bsub').textContent='și închide jumătate. Apasă ca să oprești.';
+    g('banner').onclick=stopRing;
+    ring(1200,900,300);
+    try{navigator.vibrate([200,100,200,100,200])}catch(e){}
+  }
+}
+
+function ring(f1,f2,per){
+  stopRing();
+  try{
+    ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();
+    var o=ctx.createOscillator(), gn=ctx.createGain();
+    o.type='square'; o.frequency.value=f1; o.connect(gn); gn.connect(ctx.destination); gn.gain.value=.16; o.start();
+    var st=setInterval(function(){
+      try{o.frequency.setValueAtTime(f1,ctx.currentTime);o.frequency.setValueAtTime(f2,ctx.currentTime+.12)}catch(e){}
+    },per);
+    alarm={o:o,st:st};
+  }catch(e){}
+}
+function stopRing(){
+  if(alarm){try{alarm.o.stop();clearInterval(alarm.st)}catch(e){}alarm=null}
+  g('banner').className=''; try{navigator.vibrate(0)}catch(e){}
+}
+
+function paintSig(){
+  if(!sig){g('sig').innerHTML='<div class="mini">niciun semnal</div>';return}
+  var st=n(g('stp').value,0), lot=n(g('lot').value,0), cap=n(g('cap').value,0);
+  var dir=sig.dir==='long'?1:-1;
+  if(!st||!lot){g('sig').innerHTML='<div class="mini">pune stop și lot în Setări</div>';return}
+  var sl=sig.entry-dir*st, t1=sig.entry+dir*st, t2=sig.entry+dir*2*st, r=lot*st;
+  var h='<table class="sig">';
+  h+='<tr><td>Direcție</td><td class="big" style="color:'+(dir>0?'#4ade80':'#f87171')+'">'+sig.dir.toUpperCase()+' '+sig.lv+'</td></tr>';
+  h+='<tr><td>Intrare</td><td>'+sig.entry.toFixed(2)+'</td></tr>';
+  h+='<tr><td>Stop</td><td>'+sl.toFixed(2)+' ('+st.toFixed(0)+' pt)</td></tr>';
+  h+='<tr><td>Break-even</td><td>'+sig.entry.toFixed(2)+'</td></tr>';
+  h+='<tr><td>1R</td><td>'+t1.toFixed(2)+'</td></tr>';
+  h+='<tr><td>2R</td><td>'+t2.toFixed(2)+'</td></tr>';
+  h+='<tr><td>Risc la lot '+lot+'</td><td>'+r.toFixed(2)+' $ ('+(r/cap*100).toFixed(2)+'%)</td></tr>';
+  h+='</table>';
+  if(sig.be)h+='<div class="warn">1R atins — stopul la break-even, jumătate închisă</div>';
+  g('sig').innerHTML=h;
+}
+
+function closeSig(res){
+  if(!sig){alert('niciun semnal');return}
+  jr.unshift({d:sig.dir,lv:sig.lv,e:sig.entry,t:sig.t,res:res});
+  if(res==='loss')strikes++; else strikes=0;
+  sig=null; save(); renderJ(); paintSig(); lockBox();
+}
+function renderJ(){
+  var w=jr.filter(function(x){return x.res==='win'}).length;
+  g('stats').textContent=jr.length?' · '+(w/jr.length*100).toFixed(0)+'% reușită din '+jr.length:'';
+  if(!jr.length){g('jr').innerHTML='<div class="mini">gol</div>';return}
+  g('jr').innerHTML=jr.slice(0,40).map(function(x){
+    return '<div class="jr" style="color:'+(x.res==='win'?'#4ade80':'#f87171')+'">'+
+      new Date(x.t).toLocaleString('ro-RO',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})+
+      ' · '+x.d+' '+x.lv+' @'+x.e.toFixed(2)+' · '+x.res+'</div>';
+  }).join('');
+}
+function clearJ(){if(confirm('golești jurnalul?')){jr=[];strikes=0;save();renderJ();lockBox()}}
+
+['key','cap','lot','stp'].forEach(function(id){g(id).onchange=function(){save();riskTxt();paintSig()}});
+['pR2','pR1','pP','pS1','pS2'].forEach(function(id){g(id).onchange=function(){save();buildSel();paintLvls()}});
+
+load();
+setInterval(age,1000);
+setInterval(paintBasis,20000);
+try{if(window.Notification&&Notification.permission==='default')Notification.requestPermission()}catch(e){}
 </script>
 </body>
 </html>
