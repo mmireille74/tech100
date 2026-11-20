@@ -24,11 +24,12 @@ input{background:#080c11;border:1px solid var(--line);color:var(--txt);border-ra
 #px{font-size:18px;padding:10px;font-weight:bold}
 input:focus{outline:none;border-color:var(--acc)}
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.grid4 label{font-size:10px;color:var(--dim);display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.grid4 label,.grid2 label{font-size:10px;color:var(--dim);display:block}
 .b{border:1px solid var(--line);background:#161e2a;color:var(--txt);border-radius:4px;padding:7px 12px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
 .b.acc{background:var(--acc);border-color:var(--acc);color:#fff}
 .b.warn{background:#3a2a08;border-color:var(--warn);color:var(--warn)}
-.b.dim{color:var(--dim)}
+.b.dim{color:var(--dim)}.b.on{background:#12351f;border-color:var(--up);color:var(--up)}
 .b.arm{width:100%;margin-top:9px;padding:12px;font-size:13px;font-weight:bold;background:#1a2330;border-color:#2f3d52}
 .b.arm.on{background:#12351f;border-color:var(--up);color:var(--up)}
 #alarmBox{display:none;background:#b91c1c;border:2px solid #fff;border-radius:7px;padding:12px;text-align:center;margin-bottom:9px;animation:fl .6s infinite alternate}
@@ -78,19 +79,27 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 <body>
 <div class="wrap">
 <div class="hd">
-  <div class="hd-l"><b>TECH100</b> <span class="tag">v20</span> <span id="badge" class="pill">NEARMAT</span></div>
+  <div class="hd-l"><b>TECH100</b> <span class="tag">v21</span> <span id="badge" class="pill">NEARMAT</span></div>
   <div class="hd-r"><span id="clk">--:--:--</span> <span id="mkt" class="pill">—</span></div>
 </div>
 
 <div class="big"><div class="bigp" id="bigPx">—</div><div class="bigm">preț CFD · niciun semnal</div></div>
 
-<div class="card hero">
-  <div class="ct">Preț CFD — scrie și apasă Enter</div>
-  <div class="row">
-    <input id="px" type="number" step="0.01" inputmode="decimal" placeholder="prețul sell din Trading 212">
-    <button id="pxBtn" class="b acc">Trimite</button>
+<div class="card">
+  <div class="ct">Sursă preț <span id="modeLbl" class="pill">AUTO</span></div>
+  <div class="row"><button id="mAuto" class="b on">Automat</button><button id="mMan" class="b">Manual</button></div>
+  <div id="autoBox">
+    <div class="grid2" style="margin-top:8px">
+      <label>Preț CFD sell<input id="cfdIn" type="number" step="0.01" placeholder="ex. 26050"></label>
+      <label>NQ<input id="futIn" type="number" step="0.01" placeholder="din feed"></label>
+    </div>
+    <div class="row" style="margin-top:6px"><button id="setBas" class="b acc">Setează baza</button><button id="retry" class="b dim">Reîncearcă</button></div>
+    <div id="feedSt" class="nst">Feed: se verifică…</div>
   </div>
-  <div id="stale" class="nst">Niciun preț introdus.</div>
+  <div id="manBox" style="display:none">
+    <div class="row" style="margin-top:8px"><input id="px" type="number" step="0.01" inputmode="decimal" placeholder="prețul sell din Trading 212"><button id="pxBtn" class="b acc">Trimite</button></div>
+  </div>
+  <div id="stale" class="nst">Niciun preț încă.</div>
 </div>
 
 <div class="card">
@@ -152,13 +161,15 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 
 <script>
 const $=id=>document.getElementById(id);
-const K='t100v20', EXP=20*60*1000, GAPENT=40;
-let S={armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null,entered:0};
+const K='t100v21', EXP=20*60*1000, GAPENT=40, FEEDMS=60000;
+const TGT='https://query1.finance.yahoo.com/v8/finance/chart/NQ%3DF?interval=5m&range=1d';
+const SRC=[u=>'https://r.jina.ai/'+u, u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u), u=>u];
+let S={mode:'auto',basis:null,fut:null,armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null,entered:0,busy:0,fails:0};
 const nf=v=>v==null?'—':Number(v).toLocaleString('ro-RO',{minimumFractionDigits:2,maximumFractionDigits:2});
 const num=id=>parseFloat($(id).value)||0;
 const mmss=ms=>{const s=Math.max(0,Math.round(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
-function save(){try{localStorage.setItem(K,JSON.stringify({chk:S.chk,jrn:S.jrn,strikes:S.strikes}));}catch(e){}}
-function load(){try{const c=JSON.parse(localStorage.getItem(K)||'{}');if(c.chk)S.chk=c.chk;if(c.jrn)S.jrn=c.jrn;if(c.strikes)S.strikes=c.strikes;}catch(e){}}
+function save(){try{localStorage.setItem(K,JSON.stringify({basis:S.basis,chk:S.chk,jrn:S.jrn,strikes:S.strikes,mode:S.mode}));}catch(e){}}
+function load(){try{const c=JSON.parse(localStorage.getItem(K)||'{}');if(c.basis!=null)S.basis=c.basis;if(c.chk)S.chk=c.chk;if(c.jrn)S.jrn=c.jrn;if(c.strikes)S.strikes=c.strikes;}catch(e){}}
 function piv(){return{S2:num('pS2'),S1:num('pS1'),P:num('pP'),R1:num('pR1'),R2:num('pR2')};}
 function st(t,c){const e=$('status');e.textContent='Status: '+t;e.className='status'+(c?' '+c:'');}
 let ac=null,on=0,at=null,am=null,a0=0;
@@ -175,10 +186,33 @@ function tick(){const d=new Date();$('clk').textContent=d.toLocaleTimeString('ro
  const rm=((d.getUTCHours()+2)%24)*60+d.getUTCMinutes();const op=rm>=990,sh=rm>=1320;
  $('mkt').textContent=sh?'ÎNCHIS':op?'DESCHIS':'PRE';$('mkt').className='pill '+(sh?'shut':op?'live':'');
  if(S.lastT){const a=Date.now()-S.lastT;const e=$('stale');
-  if(a>180000){e.className='nst no';e.textContent='Preț vechi de '+mmss(a)+'. Semnalul se dă la preț real, nu la bandă.';}
+  if(a>180000){e.className='nst no';e.textContent='Preț vechi de '+mmss(a)+'. Semnalul se dă la preț real.';}
   else{e.className='nst ok';e.textContent='Ultimul preț acum '+mmss(a)+' · '+nf(S.last);}}
  if(S.cur){const l=S.cur.exp-Date.now();const cd=document.getElementById('cd');
   if(cd){if(l<=0){cd.className='cd dead';cd.textContent='EXPIRAT';}else{cd.className='cd'+(l<3e5?' hot':'');cd.textContent='valabil încă '+mmss(l);}}}}
+function setMode(m){S.mode=m;$('mAuto').className='b'+(m==='auto'?' on':'');$('mMan').className='b'+(m==='man'?' on':'');
+ $('autoBox').style.display=m==='auto'?'block':'none';$('manBox').style.display=m==='man'?'block':'none';$('modeLbl').textContent=m==='auto'?'AUTO':'MANUAL';save();}
+async function grab(u,ms){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);
+ try{const r=await fetch(u,{cache:'no-store',signal:c.signal});const x=await r.text();return {ok:r.ok,txt:x};}
+ catch(e){return {ok:false,txt:''};}finally{clearTimeout(t);}}
+function extract(t){const i=t.indexOf('{"chart"');if(i<0)return t;const j=t.lastIndexOf('}');return t.slice(i,j+1);}
+function parse(i,txt){const t=i===0?extract(txt):txt;
+ try{const j=JSON.parse(t);const p=j.chart?.result?.[0]?.meta?.regularMarketPrice;if(p)return +p;}catch(e){}return 0;}
+async function feed(){
+ if(S.mode!=='auto'||S.busy||S.demo)return;S.busy=1;
+ for(let i=0;i<SRC.length;i++){
+  const r=await grab(SRC[i](TGT),i===0?20000:10000);
+  if(!r.ok)continue;
+  const p=parse(i,r.txt);if(!p)continue;
+  S.fut=p;S.fails=0;S.busy=0;$('futIn').value=p.toFixed(2);
+  $('feedSt').className='nst ok';$('feedSt').textContent='Feed: funcționează · NQ '+nf(p)+(S.basis==null?' — setează baza':'');
+  if(S.basis!=null)onPrice(p+S.basis,'feed');
+  return;
+ }
+ S.busy=0;S.fails++;
+ $('feedSt').className='nst no';$('feedSt').textContent='Feed căzut ('+S.fails+').';
+ if(S.fails>=2){setMode('man');$('feedSt').textContent='Feed căzut de 2 ori — am trecut pe Manual. Scrie prețul CFD.';}
+}
 function arm(){unlock();const p=piv();
  S.bands=[{k:'R2',v:p.R2},{k:'R1',v:p.R1},{k:'P',v:p.P},{k:'S1',v:p.S1},{k:'S2',v:p.S2}].sort((a,b)=>b.v-a.v);
  S.armed=true;S.hit={};S.cool={};const t=new Date().toLocaleTimeString('ro-RO');
@@ -195,7 +229,7 @@ function paintPrev(){const p=S.last;
  if(!p){$('prev').innerHTML='<div class="dim">Introdu un preț.</div>';return;}
  $('prev').innerHTML=['short','long'].map(d=>{const c=calc(d,p),over=c.risk>c.ru;
   return '<div class="pl'+(over?' hi':'')+'"><span style="color:'+(d==='short'?'#ef4444':'#22c55e')+'">'+d.toUpperCase()+'</span><span>SL '+nf(c.stop)+' · TP '+nf(c.tp)+' · <b>'+nf(c.risk)+' $</b> ('+nf(c.risk/num('cap')*100)+'%)</span></div>';}).join('')+
-  '<div class="dim" style="margin-top:4px;font-size:10px">calculat la '+nf(p)+' · lot '+(num('lot')>0?num('lot').toFixed(2):'auto')+'</div>';}
+  '<div class="dim" style="margin-top:4px;font-size:10px">la '+nf(p)+' · lot '+(num('lot')>0?num('lot').toFixed(2):'auto')+'</div>';}
 function paint(d,e,c,jmp){const over=c.risk>c.ru;
  $('rec').className='rec';
  $('rec').innerHTML='<b style="color:'+(d==='short'?'#ef4444':'#22c55e')+'">'+(d==='short'?'SHORT':'LONG')+' @ '+nf(e)+'</b>'+(jmp?' <span style="color:#f59e0b">(salt)</span>':'')+
@@ -238,6 +272,11 @@ function demo(){unlock();if(!S.armed)arm();S.demo=1;S.demoI=0;S.last=null;st('de
  window._d=setInterval(()=>{if(S.demoI>=DEMO.length){clearInterval(window._d);S.demo=0;S.last=null;st('demo terminat','on');return;}onPrice(DEMO[S.demoI],'demo');S.demoI++;},700);}
 function subPx(){const v=parseFloat($('px').value);if(!v)return;onPrice(v,'m');$('px').value='';$('px').focus();}
 $('pxBtn').onclick=subPx;$('px').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();subPx();}});
+$('mAuto').onclick=()=>{setMode('auto');S.fails=0;feed();};$('mMan').onclick=()=>setMode('man');
+$('setBas').onclick=()=>{const v=parseFloat($('cfdIn').value);let f=S.fut;const m=parseFloat($('futIn').value);if(m)f=m;
+ if(!v){$('feedSt').textContent='Lipsește prețul CFD.';return;}if(!f){$('feedSt').textContent='Lipsește NQ.';return;}
+ S.basis=+(v-f).toFixed(2);$('feedSt').className='nst ok';$('feedSt').textContent='Bază '+nf(S.basis)+' pt.';save();};
+$('retry').onclick=()=>{S.fails=0;feed();};
 $('armBtn').onclick=arm;
 $('testSig').onclick=()=>{unlock();alarm('TEST alarmă.',30);st('test','fire');};
 $('demo').onclick=demo;
@@ -245,7 +284,7 @@ $('reset').onclick=()=>{S.armed=0;S.last=null;S.lastT=0;S.hit={};S.bands=[];S.cu
  $('armBtn').className='b arm';$('armBtn').textContent='ARMEAZĂ BENZILE';$('armLine').className='nst';$('armLine').textContent='Benzile nu sunt armate.';
  $('badge').className='pill';$('badge').textContent='NEARMAT';st('reset');draw();};
 $('clearJ').onclick=()=>{S.jrn=[];S.strikes=0;drawJrn();save();};
-load();drawChk();drawJrn();draw();tick();setInterval(tick,1000);
+load();drawChk();drawJrn();draw();tick();setMode('auto');feed();setInterval(tick,1000);setInterval(feed,FEEDMS);
 document.querySelectorAll('input').forEach(i=>i.addEventListener('input',reCalc));
 document.querySelectorAll('.pv').forEach(i=>i.addEventListener('change',()=>{if(S.armed)arm();}));
 </script>
