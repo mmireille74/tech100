@@ -17,18 +17,18 @@ body{margin:0;background:var(--bg);color:var(--txt);font:13px/1.45 ui-monospace,
 .bigp{font-size:34px;font-weight:bold;letter-spacing:1px}
 .bigm{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
 .card{background:var(--pan);border:1px solid var(--line);border-radius:7px;padding:10px;margin-bottom:9px}
+.card.hero{border-color:#2a4a72;background:#0f1a26}
 .ct{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
 .row{display:flex;gap:6px;flex-wrap:wrap}
 input{background:#080c11;border:1px solid var(--line);color:var(--txt);border-radius:4px;padding:6px 7px;font:inherit;font-size:12px;width:100%;min-width:0}
-#px{font-size:16px;padding:9px;font-weight:bold}
+#px{font-size:18px;padding:10px;font-weight:bold}
 input:focus{outline:none;border-color:var(--acc)}
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.grid4 label,.grid2 label{font-size:10px;color:var(--dim);display:block}
+.grid4 label{font-size:10px;color:var(--dim);display:block}
 .b{border:1px solid var(--line);background:#161e2a;color:var(--txt);border-radius:4px;padding:7px 12px;font:inherit;font-size:12px;cursor:pointer;white-space:nowrap}
 .b.acc{background:var(--acc);border-color:var(--acc);color:#fff}
 .b.warn{background:#3a2a08;border-color:var(--warn);color:var(--warn)}
-.b.dim{color:var(--dim)}.b.on{background:#12351f;border-color:var(--up);color:var(--up)}
+.b.dim{color:var(--dim)}
 .b.arm{width:100%;margin-top:9px;padding:12px;font-size:13px;font-weight:bold;background:#1a2330;border-color:#2f3d52}
 .b.arm.on{background:#12351f;border-color:var(--up);color:var(--up)}
 #alarmBox{display:none;background:#b91c1c;border:2px solid #fff;border-radius:7px;padding:12px;text-align:center;margin-bottom:9px;animation:fl .6s infinite alternate}
@@ -39,7 +39,6 @@ input:focus{outline:none;border-color:var(--acc)}
 .al-b{width:100%;background:#fff;color:#7f1d1d;border:none;border-radius:5px;padding:10px;font:inherit;font-size:13px;font-weight:bold;cursor:pointer}
 .nst{font-size:11px;margin-top:8px;padding:6px 8px;border-radius:4px;background:#080c11;border:1px solid var(--line);color:var(--dim);line-height:1.5}
 .nst.ok{color:var(--up);border-color:#1d4a2e}.nst.no{color:var(--warn);border-color:#4a3a10}
-.diag{font-size:10px;line-height:1.6;color:var(--dim);background:#080c11;border:1px solid var(--line);border-radius:4px;padding:7px;margin-top:6px;white-space:pre-wrap}
 .status{margin-top:8px;font-size:11px;background:#080c11;border:1px solid var(--line);border-left:3px solid var(--dim);border-radius:4px;padding:7px 9px;color:var(--dim)}
 .status.on{border-left-color:var(--up);color:var(--up)}.status.fire{border-left-color:var(--warn);color:var(--warn)}
 .zone{font-size:12px;color:var(--dim);margin-bottom:6px}
@@ -76,27 +75,19 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 <body>
 <div class="wrap">
 <div class="hd">
-  <div class="hd-l"><b>TECH100</b> <span class="tag">v16</span> <span id="badge" class="pill">NEARMAT</span></div>
+  <div class="hd-l"><b>TECH100</b> <span class="tag">v17</span> <span id="badge" class="pill">NEARMAT</span></div>
   <div class="hd-r"><span id="clk">--:--:--</span> <span id="mkt" class="pill">—</span></div>
 </div>
+
 <div class="big"><div class="bigp" id="bigPx">—</div><div class="bigm">preț CFD · niciun semnal</div></div>
 
-<div class="card">
-  <div class="ct">Sursă preț <span id="modeLbl" class="pill">AUTO</span></div>
-  <div class="row"><button id="mAuto" class="b on">Feed automat</button><button id="mMan" class="b">Manual</button></div>
-  <div id="autoBox">
-    <div class="grid2" style="margin-top:8px">
-      <label>Preț CFD sell<input id="cfdIn" type="number" step="0.01" placeholder="ex. 26470.5"></label>
-      <label>NQ<input id="futIn" type="number" step="0.01" placeholder="din feed"></label>
-    </div>
-    <div class="row" style="margin-top:6px"><button id="setBas" class="b acc">Setează baza</button><button id="retry" class="b dim">Reîncearcă feed</button></div>
-    <div id="feedSt" class="nst">Feed: se verifică…</div>
-    <div id="diag" class="diag">diagnostic gol</div>
+<div class="card hero">
+  <div class="ct">Preț CFD — scrie și apasă Enter</div>
+  <div class="row">
+    <input id="px" type="number" step="0.01" inputmode="decimal" placeholder="prețul sell din Trading 212">
+    <button id="pxBtn" class="b acc">Trimite</button>
   </div>
-  <div id="manBox" style="display:none">
-    <div class="row" style="margin-top:8px"><input id="px" type="number" step="0.01" inputmode="decimal" placeholder="prețul sell din Trading 212"><button id="pxBtn" class="b acc">Trimite</button></div>
-  </div>
-  <div id="stale" class="nst">Niciun preț încă.</div>
+  <div id="stale" class="nst">Niciun preț introdus.</div>
 </div>
 
 <div class="card">
@@ -153,22 +144,13 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 
 <script>
 const $=id=>document.getElementById(id);
-const K='t100v16', EXP=20*60*1000, GAPMS=3*60*1000, GAPENT=40;
-const TGT='https://query1.finance.yahoo.com/v8/finance/chart/NQ%3DF?interval=1m&range=1d';
-const STOOQ='https://stooq.com/q/l/?s=nq.f&f=sd2t2ohlc&h&e=csv';
-const SRC=[
- ['jina', u=>'https://r.jina.ai/'+u],
- ['allorigins', u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u)],
- ['codetabs', u=>'https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(u)],
- ['direct', u=>u],
- ['stooq', ()=>STOOQ]
-];
-let S={mode:'auto',basis:null,fut:null,armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null,busy:0,fails:0};
+const K='t100v17', EXP=20*60*1000, GAPMS=3*60*1000, GAPENT=40;
+let S={armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null};
 const nf=v=>v==null?'—':Number(v).toLocaleString('ro-RO',{minimumFractionDigits:2,maximumFractionDigits:2});
 const num=id=>parseFloat($(id).value)||0;
 const mmss=ms=>{const s=Math.max(0,Math.round(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
-function save(){try{localStorage.setItem(K,JSON.stringify({basis:S.basis,chk:S.chk,jrn:S.jrn,strikes:S.strikes}));}catch(e){}}
-function load(){try{const c=JSON.parse(localStorage.getItem(K)||'{}');if(c.basis!=null)S.basis=c.basis;if(c.chk)S.chk=c.chk;if(c.jrn)S.jrn=c.jrn;if(c.strikes)S.strikes=c.strikes;}catch(e){}}
+function save(){try{localStorage.setItem(K,JSON.stringify({chk:S.chk,jrn:S.jrn,strikes:S.strikes}));}catch(e){}}
+function load(){try{const c=JSON.parse(localStorage.getItem(K)||'{}');if(c.chk)S.chk=c.chk;if(c.jrn)S.jrn=c.jrn;if(c.strikes)S.strikes=c.strikes;}catch(e){}}
 function piv(){return{S2:num('pS2'),S1:num('pS1'),P:num('pP'),R1:num('pR1'),R2:num('pR2')};}
 function st(t,c){const e=$('status');e.textContent='Status: '+t;e.className='status'+(c?' '+c:'');}
 let ac=null,on=0,at=null,am=null,a0=0;
@@ -189,48 +171,6 @@ function tick(){const d=new Date();$('clk').textContent=d.toLocaleTimeString('ro
   else{e.className='nst ok';e.textContent='Ultimul preț acum '+mmss(a)+' · '+nf(S.last);}}
  if(S.cur){const l=S.cur.exp-Date.now();const cd=document.getElementById('cd');
   if(cd){if(l<=0){cd.className='cd dead';cd.textContent='EXPIRAT';}else{cd.className='cd'+(l<3e5?' hot':'');cd.textContent='valabil încă '+mmss(l);}}}}
-function setMode(m){S.mode=m;$('mAuto').className='b'+(m==='auto'?' on':'');$('mMan').className='b'+(m==='man'?' on':'');
- $('autoBox').style.display=m==='auto'?'block':'none';$('manBox').style.display=m==='man'?'block':'none';$('modeLbl').textContent=m.toUpperCase();}
-
-async function grab(u,ms){
- const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);
- try{const r=await fetch(u,{cache:'no-store',signal:c.signal});const x=await r.text();return {ok:r.ok,code:r.status,txt:x};}
- catch(e){return {ok:false,code:0,txt:'',err:e.name||'err'};}
- finally{clearTimeout(t);}
-}
-function extract(txt){
- const i=txt.indexOf('{"chart"');
- if(i<0)return txt;
- const j=txt.lastIndexOf('}');
- return txt.slice(i,j+1);
-}
-function parse(name,txt){
- const t=name==='jina'?extract(txt):txt;
- try{const j=JSON.parse(t);const p=j.chart?.result?.[0]?.meta?.regularMarketPrice;if(p)return +p;}catch(e){}
- if(name==='stooq'){const m=t.match(/nq\.f,[^,]*,[^,]*,([\d.]+),([\d.]+),([\d.]+),([\d.]+)/i);if(m)return +m[4];}
- return 0;
-}
-async function feed(){
- if(S.mode!=='auto'||S.busy)return;S.busy=1;
- const log=[];
- for(const [name,f] of SRC){
-  $('feedSt').className='nst';$('feedSt').textContent='Feed: încerc '+name+'…';
-  const r=await grab(f(TGT),name==='jina'?22000:12000);
-  if(!r.ok){log.push(name+': '+(r.code?('HTTP '+r.code):(r.err||'blocat')));$('diag').textContent=log.join('\n');continue;}
-  const p=parse(name,r.txt);
-  if(!p){log.push(name+': fără preț ('+r.txt.length+' car.)');$('diag').textContent=log.join('\n');continue;}
-  S.fut=p;$('futIn').value=p.toFixed(2);S.fails=0;S.busy=0;
-  $('feedSt').className='nst ok';$('feedSt').textContent='Feed: funcționează prin '+name+' · NQ '+nf(p);
-  $('diag').textContent=log.join('\n')+(log.length?'\n':'')+name+': OK';
-  if(S.basis!=null&&!S.demo)onPrice(p+S.basis,'feed');
-  return;
- }
- S.busy=0;S.fails++;
- $('feedSt').className='nst no';$('feedSt').textContent='Toate căile blocate.';
- $('diag').textContent=log.join('\n');
- if(S.fails>=2){setMode('man');$('feedSt').textContent='Feed indisponibil — trecut pe Manual.';}
-}
-
 function arm(){unlock();const p=piv();
  S.bands=[{k:'R2',v:p.R2},{k:'R1',v:p.R1},{k:'P',v:p.P},{k:'S1',v:p.S1},{k:'S2',v:p.S2}].sort((a,b)=>b.v-a.v);
  S.armed=true;S.hit={};S.cool={};const t=new Date().toLocaleTimeString('ro-RO');
@@ -281,11 +221,6 @@ function demo(){unlock();if(!S.armed)arm();S.demo=1;S.demoI=0;S.last=null;st('de
  window._d=setInterval(()=>{if(S.demoI>=DEMO.length){clearInterval(window._d);S.demo=0;S.last=null;st('demo terminat','on');return;}onPrice(DEMO[S.demoI],'demo');S.demoI++;},700);}
 function subPx(){const v=parseFloat($('px').value);if(!v)return;onPrice(v,'m');$('px').value='';$('px').focus();}
 $('pxBtn').onclick=subPx;$('px').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();subPx();}});
-$('mAuto').onclick=()=>{setMode('auto');feed();};$('mMan').onclick=()=>setMode('man');
-$('setBas').onclick=()=>{const v=parseFloat($('cfdIn').value);let f=S.fut;const m=parseFloat($('futIn').value);if(m)f=m;
- if(!v){$('feedSt').textContent='Lipsește prețul CFD.';return;}if(!f){$('feedSt').textContent='Lipsește NQ.';return;}
- S.basis=+(v-f).toFixed(2);$('feedSt').className='nst ok';$('feedSt').textContent='Bază '+nf(S.basis)+' pt.';save();};
-$('retry').onclick=()=>{S.fails=0;feed();};
 $('armBtn').onclick=arm;
 $('testSig').onclick=()=>{unlock();alarm('TEST alarmă.',30);st('test','fire');};
 $('demo').onclick=demo;
@@ -293,7 +228,7 @@ $('reset').onclick=()=>{S.armed=0;S.last=null;S.lastT=0;S.hit={};S.bands=[];S.cu
  $('armBtn').className='b arm';$('armBtn').textContent='ARMEAZĂ BENZILE';$('armLine').className='nst';$('armLine').textContent='Benzile nu sunt armate.';
  $('badge').className='pill';$('badge').textContent='NEARMAT';st('reset');draw();};
 $('clearJ').onclick=()=>{S.jrn=[];S.strikes=0;drawJrn();save();};
-load();drawChk();drawJrn();draw();tick();setMode('auto');feed();setInterval(tick,1000);setInterval(feed,30000);
+load();drawChk();drawJrn();draw();tick();setInterval(tick,1000);
 document.querySelectorAll('.pv,input').forEach(i=>i.onchange=()=>{if(S.armed)arm();});
 </script>
 </body>
