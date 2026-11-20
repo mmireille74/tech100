@@ -75,7 +75,7 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 <body>
 <div class="wrap">
 <div class="hd">
-  <div class="hd-l"><b>TECH100</b> <span class="tag">v17</span> <span id="badge" class="pill">NEARMAT</span></div>
+  <div class="hd-l"><b>TECH100</b> <span class="tag">v18</span> <span id="badge" class="pill">NEARMAT</span></div>
   <div class="hd-r"><span id="clk">--:--:--</span> <span id="mkt" class="pill">—</span></div>
 </div>
 
@@ -96,10 +96,10 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
     <label>Capital $<input id="cap" type="number" value="4393"></label>
     <label>Risc țintă %<input id="risk" type="number" step="0.1" value="0.6"></label>
     <label>Val. punct la lot 1<input id="pv" type="number" step="0.1" value="1"></label>
-    <label>ATR<input id="atr" type="number" value="900"></label>
+    <label>ATR<input id="atr" type="number" value="1000"></label>
   </div>
   <div class="grid4" style="margin-top:6px">
-    <label>Lot fix (0 = calculat)<input id="lot" type="number" step="0.1" value="0.25"></label>
+    <label>Lot fix (0 = calculat)<input id="lot" type="number" step="0.05" value="0.15"></label>
     <label>S2<input class="pv" id="pS2" type="number" step="0.01" value="25505.95"></label>
     <label>S1<input class="pv" id="pS1" type="number" step="0.01" value="26016.40"></label>
     <label>P<input class="pv" id="pP" type="number" step="0.01" value="26926.53"></label>
@@ -144,8 +144,8 @@ details summary{cursor:pointer;font-size:11px;color:var(--dim);text-transform:up
 
 <script>
 const $=id=>document.getElementById(id);
-const K='t100v17', EXP=20*60*1000, GAPMS=3*60*1000, GAPENT=40;
-let S={armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null};
+const K='t100v18', EXP=20*60*1000, GAPMS=3*60*1000, GAPENT=40;
+let S={armed:false,last:null,lastT:0,bands:[],hit:{},cool:{},jrn:[],strikes:0,demo:0,demoI:0,chk:{},cur:null,entered:0};
 const nf=v=>v==null?'—':Number(v).toLocaleString('ro-RO',{minimumFractionDigits:2,maximumFractionDigits:2});
 const num=id=>parseFloat($(id).value)||0;
 const mmss=ms=>{const s=Math.max(0,Math.round(ms/1000));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
@@ -183,18 +183,25 @@ function calc(d,e){const cap=num('cap'),rk=num('risk'),pv=num('pv')||1,atr=num('
  const sp=Math.max(60,atr*(con?0.55:0.35)),rr=con?3:2;const ru=cap*rk/100;
  const l=lf>0?lf:Math.max(0.1,Math.floor((ru/(sp*pv))*(con?0.5:1)*100)/100);
  return{sp,stop:d==='short'?e+sp:e-sp,tp:d==='short'?e-sp*rr:e+sp*rr,lot:l,rr,con,ru,risk:l*sp*pv,maxStop:ru/(l*pv)};}
-function fire(d,b){
- const now=Date.now();if(S.cool[b.k]&&now-S.cool[b.k]<90000)return;S.cool[b.k]=now;
- const jmp=Math.abs(S.last-b.v)>GAPENT, e=jmp?S.last:b.v, c=calc(d,e), over=c.risk>c.ru;
- const lbl=(d==='short'?'SHORT':'LONG')+' la '+b.k+' @ '+nf(e)+' · SL '+nf(c.stop)+' · TP '+nf(c.tp);
- S.cur={exp:now+EXP};alarm(lbl);st(lbl,'fire');$('rec').className='rec';
- $('rec').innerHTML='<b style="color:'+(d==='short'?'#ef4444':'#22c55e')+'">'+(d==='short'?'SHORT':'LONG')+' — '+b.k+' @ '+nf(e)+'</b>'+(jmp?' <span style="color:#f59e0b">(preț real)</span>':'')+
+function paint(d,e,c,jmp){
+ const over=c.risk>c.ru;
+ $('rec').className='rec';
+ $('rec').innerHTML='<b style="color:'+(d==='short'?'#ef4444':'#22c55e')+'">'+(d==='short'?'SHORT':'LONG')+' @ '+nf(e)+'</b>'+(jmp?' <span style="color:#f59e0b">(preț real)</span>':'')+
   '<br>SL '+nf(c.stop)+' ('+nf(c.sp)+' pt) · TP '+nf(c.tp)+' ('+c.rr+'R)'+(c.con?' · <span style="color:#f59e0b">contra</span>':'')+
   '<span class="risk '+(over?'hi':'')+'">Risc la '+c.lot.toFixed(2)+' lot: <b>'+nf(c.risk)+' $</b> ('+nf(c.risk/num('cap')*100)+'%)'+(over?'<br>Peste țintă. Stop ar trebui '+Math.round(c.maxStop)+' pt':'')+'</span>'+
-  '<span class="be" id="be"></span><span class="ent" id="ent"><button id="entBtn">AM INTRAT</button></span><span id="cd" class="cd">valabil 20:00</span>';
- $('entBtn').onclick=()=>{const be1=d==='short'?e-c.sp:e+c.sp;$('ent').innerHTML='<span style="color:#22c55e">notat la '+nf(e)+'</span>';
-  $('be').textContent='La 1R ('+nf(be1)+') mută stopul la intrare.';};
+  '<span class="be" id="be">'+(S.entered?'La 1R ('+nf(d==='short'?e-c.sp:e+c.sp)+') mută stopul la intrare.':'')+'</span>'+
+  '<span class="ent" id="ent">'+(S.entered?'<span style="color:#22c55e">intrare notată</span>':'<button id="entBtn">AM INTRAT</button>')+'</span>'+
+  '<span id="cd" class="cd">valabil 20:00</span>';
+ if(!S.entered)$('entBtn').onclick=()=>{S.entered=1;paint(d,e,c,jmp);};
+}
+function fire(d,b){
+ const now=Date.now();if(S.cool[b.k]&&now-S.cool[b.k]<90000)return;S.cool[b.k]=now;
+ const jmp=Math.abs(S.last-b.v)>GAPENT, e=jmp?S.last:b.v, c=calc(d,e);
+ S.cur={exp:now+EXP,d:d,e:e};S.entered=0;
+ const lbl=(d==='short'?'SHORT':'LONG')+' la '+b.k+' @ '+nf(e)+' · SL '+nf(c.stop)+' · TP '+nf(c.tp);
+ alarm(lbl);st(lbl,'fire');paint(d,e,c,jmp);
  S.jrn.unshift({t:new Date().toLocaleTimeString('ro-RO'),d,k:b.k,e,tp:c.tp,s:c.stop,l:c.lot.toFixed(2),res:null});drawJrn();save();}
+function reCalc(){if(!S.cur)return;const c=calc(S.cur.d,S.cur.e);paint(S.cur.d,S.cur.e,c,false);}
 function onPrice(p,src){if(!p||!isFinite(p))return;const now=Date.now();
  if(S.lastT&&now-S.lastT>GAPMS&&!S.demo)S.last=null;
  const prev=S.last;S.last=p;S.lastT=now;$('bigPx').textContent=nf(p);
@@ -229,7 +236,8 @@ $('reset').onclick=()=>{S.armed=0;S.last=null;S.lastT=0;S.hit={};S.bands=[];S.cu
  $('badge').className='pill';$('badge').textContent='NEARMAT';st('reset');draw();};
 $('clearJ').onclick=()=>{S.jrn=[];S.strikes=0;drawJrn();save();};
 load();drawChk();drawJrn();draw();tick();setInterval(tick,1000);
-document.querySelectorAll('.pv,input').forEach(i=>i.onchange=()=>{if(S.armed)arm();});
+document.querySelectorAll('input').forEach(i=>i.addEventListener('input',reCalc));
+document.querySelectorAll('.pv').forEach(i=>i.addEventListener('change',()=>{if(S.armed)arm();}));
 </script>
 </body>
 </html>
